@@ -2,6 +2,27 @@ import sys
 
 
 class JackTokenizer:
+    """
+    A tokenizer for the Jack language.
+
+    Reads in a .jack file and identifies the individual tokens within
+    the file, to be passed on for compilation into virtual machine
+    language.
+
+    Attributes
+    ----------
+    has_more_tokens : bool
+        True until the end of the file is reached
+    token : str
+        The last token to have been identified
+    token_type : str
+        The type of the last token
+
+    Methods
+    -------
+    advance()
+        Advances to the next token in the file.
+    """
     def __init__(self, file_path):
         self._file_path = file_path
         self._file = None
@@ -25,6 +46,7 @@ class JackTokenizer:
         self._file.close()
 
     def advance(self):
+        """Advance to the next token in the file."""
         while self._has_more_tokens:
             if self._char_no == len(self._line):
                 self._go_to_next_line()
@@ -46,7 +68,7 @@ class JackTokenizer:
                     self._char_no += 1
                     end_of_string = self._line.find("\"", self._char_no)
                     if end_of_string == -1:
-                        self._error(
+                        error(
                             f"Unclosed string in file '{self._file_path}' "
                             f"on line {self._line_no}"
                         )
@@ -60,10 +82,10 @@ class JackTokenizer:
                     if self._is_comment():
                         continue
                 else:
-                    self._error(
+                    error(
                         f"Invalid character \"{first}\" detected in file "
                         f"'{self._file_path}' on line {self._line_no}.\nBad "
-                        f"line : {self._line}"
+                        f"line: {self._line}"
                     )
                 return
 
@@ -91,7 +113,7 @@ class JackTokenizer:
                     self._char_no = end_of_comment_index + 2
                     break
             else:
-                self._error(
+                error(
                     "Multi-line comment left unclosed. Are you "
                     "missing an */ somewhere?"
                 )
@@ -110,9 +132,6 @@ class JackTokenizer:
         else:
             self._has_more_tokens = False
 
-    def _error(self, message):
-        print(message)
-        sys.exit(1)
 
     @property
     def has_more_tokens(self):
@@ -126,9 +145,10 @@ class JackTokenizer:
     def token_type(self):
         return self._token_type
 
-    @property
-    def line(self):
-        return self._line
+
+def error(message):
+    print(message)
+    sys.exit(1)
 
 _START_WORD_CHARS = frozenset(
         "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM_")

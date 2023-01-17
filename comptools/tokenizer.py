@@ -1,4 +1,4 @@
-import sys
+from comptools._error import error
 
 
 class JackTokenizer:
@@ -17,33 +17,23 @@ class JackTokenizer:
         The last token to have been identified
     token_type : str
         The type of the last token
+    line_no : int
+        The current line number
 
     Methods
     -------
     advance()
         Advances to the next token in the file.
     """
-    def __init__(self, file_path):
+    def __init__(self, file, file_path):
+        self._file = file
         self._file_path = file_path
-        self._file = None
-        self._has_more_tokens = None
+        self._has_more_tokens = True
         self._token = None
         self._token_type = None
-        self._line = None
-        self._line_no = None
-        self._char_no = None
-
-    def __enter__(self):
-        self._file = open(self._file_path, "r")
-        self._has_more_tokens = True
         self._line = ""
         self._line_no = 0
         self._char_no = 0
-        self.advance()
-        return self
-
-    def __exit__(self, *args):
-        self._file.close()
 
     def advance(self):
         """Advance to the next token in the file."""
@@ -55,25 +45,25 @@ class JackTokenizer:
                 if first in _START_WORD_CHARS:
                     self._build_token(_WORD_CHARS)
                     self._token_type = (
-                        "KEYWORD" if self._token in _KEYWORDS
-                        else "IDENTIFIER")
+                        "keyword" if self._token in _KEYWORDS
+                        else "identifier")
                 elif first in _SYMBOLS:
                     self._token = first
-                    self._token_type = "SYMBOL"
+                    self._token_type = "symbol"
                     self._char_no += 1
                 elif first in _DIGITS:
                     self._build_token(_DIGITS)
-                    self._token_type = "INT_CONST"
+                    self._token_type = "int_const"
                 elif first in _QUOTE:
                     self._char_no += 1
                     end_of_string = self._line.find("\"", self._char_no)
                     if end_of_string == -1:
                         error(
                             f"Unclosed string in file '{self._file_path}' "
-                            f"on line {self._line_no}"
+                            f"on line {self._line_no}."
                         )
                     self._token = self._line[self._char_no:end_of_string]
-                    self._token_type = "STRING_CONST"
+                    self._token_type = "string_const"
                     self._char_no = end_of_string + 1
                 elif first in _SPACE:
                     self._char_no += 1
@@ -119,7 +109,7 @@ class JackTokenizer:
                 )
         else:
             self._token = "/"
-            self._token_type = "SYMBOL"
+            self._token_type = "symbol"
             return False
         return True
 
@@ -145,10 +135,10 @@ class JackTokenizer:
     def token_type(self):
         return self._token_type
 
+    @property
+    def line_no(self):
+        return self._line_no
 
-def error(message):
-    print(message)
-    sys.exit(1)
 
 _START_WORD_CHARS = frozenset(
         "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM_")

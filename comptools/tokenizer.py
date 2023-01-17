@@ -1,4 +1,4 @@
-from comptools._error import error
+from comptools._error import JackError
 
 
 class JackTokenizer:
@@ -58,9 +58,9 @@ class JackTokenizer:
                     self._char_no += 1
                     end_of_string = self._line.find("\"", self._char_no)
                     if end_of_string == -1:
-                        error(
-                            f"Unclosed string in file '{self._file_path}' "
-                            f"on line {self._line_no}."
+                        raise JackError(
+                            self._file_path,
+                            f"Unclosed string on line {self._line_no}."
                         )
                     self._token = self._line[self._char_no:end_of_string]
                     self._token_type = "string_const"
@@ -72,10 +72,10 @@ class JackTokenizer:
                     if self._is_comment():
                         continue
                 else:
-                    error(
-                        f"Invalid character \"{first}\" detected in file "
-                        f"'{self._file_path}' on line {self._line_no}.\nBad "
-                        f"line: {self._line}"
+                    raise JackError(
+                        self._file_path,
+                        f"Invalid character \"{first}\" detected "
+                        f"on line {self._line_no}.\nBad line: {self._line}"
                     )
                 return
 
@@ -103,7 +103,8 @@ class JackTokenizer:
                     self._char_no = end_of_comment_index + 2
                     break
             else:
-                error(
+                raise JackError(
+                    self._file_path,
                     "Multi-line comment left unclosed. Are you "
                     "missing an */ somewhere?"
                 )

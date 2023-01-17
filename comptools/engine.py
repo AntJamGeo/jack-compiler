@@ -1,6 +1,6 @@
 import os
 
-from comptools._error import error
+from comptools._error import JackError
 from comptools.tokenizer import JackTokenizer
 
 
@@ -31,8 +31,16 @@ class CompilationEngine:
         self._in_file.close()
         self._out_file.close()
 
+    def run(self):
+        try:
+            self._compile_class()
+            return True
+        except JackError as e:
+            print(e.message)
+            return False
+
     # ---------------------COMPILATION FUNCTIONS---------------------
-    def compile_class(self):
+    def _compile_class(self):
         self._tokenizer.advance()
         self._open_block("class")
         self._assert_token("class")
@@ -54,7 +62,7 @@ class CompilationEngine:
         self._close_block("class")
 
         if self._tokenizer.has_more_tokens:
-            error(
+            raise JackError(
                 self._file_path,
                 "All code should be within a single class block."
                 f"There exists code outside of this"
@@ -138,7 +146,7 @@ class CompilationEngine:
     # ----------------------ASSERTION FUNCTIONS----------------------
     def _assert_has_more_tokens(self):
         if not self._tokenizer._has_more_tokens:
-            error(
+            raise JackError(
                 self._file_path,
                 "Program seems unfinished. Have you missed something?"
             )
@@ -146,7 +154,7 @@ class CompilationEngine:
     def _assert_token(self, token):
         self._assert_has_more_tokens()
         if self._tokenizer.token != token:
-            error(
+            raise JackError(
                 self._file_path,
                 f"On line {self._tokenizer.line_no}, "
                 f"expected token '{token}' but got '{self._tokenizer.token}'."
@@ -155,7 +163,7 @@ class CompilationEngine:
     def _assert_token_type(self, type_):
         self._assert_has_more_tokens()
         if self._tokenizer.token_type != type_:
-            error(
+            raise JackError(
                 self._file_path,
                 f"On line {self._tokenizer.line_no}, "
                 f"expected token type '{type_}' but got "
@@ -167,7 +175,7 @@ class CompilationEngine:
         self._assert_has_more_tokens()
         if (self._tokenizer.token not in _TYPE_KEYWORDS
                 and self._tokenizer.token_type != "identifier"):
-            error(
+            raise JackError(
                 self._file_path,
                 f"On line {self._tokenizer.line_no}, "
                 "expected a type (int, char, boolean, or class name) but got "

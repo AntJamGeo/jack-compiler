@@ -1,5 +1,3 @@
-import sys
-
-def error(file_path, message):
-    print(f"Error in {file_path}: {message}")
-    sys.exit(1)
+class JackError(Exception):
+    def __init__(self, file_path, message):
+        self.message = f"Error in {file_path}: {message}"

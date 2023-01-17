@@ -121,6 +121,8 @@ class JackTokenizer:
             self._line = self._line.strip()
         else:
             self._has_more_tokens = False
+            self._token = None
+            self._token_type = None
 
 
     @property

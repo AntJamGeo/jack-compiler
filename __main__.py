@@ -23,12 +23,12 @@ if os.path.isdir(path):
         name_no_ext, ext = os.path.splitext(entry.name)
         if os.path.isfile(entry.name) and ext == ".jack":
             files.append((entry.name, name_no_ext))
-    for basename, name_no_ext in files:
-        compile(basename, name_no_ext)
+    for basename, base_no_ext in files:
+        compile(basename, base_no_ext)
 elif os.path.isfile(path) and ext == ".jack":
     if dirname:
         os.chdir(dirname)
-    compile(basename)
+    compile(basename, base_no_ext)
 else:
     print(
             "Error: The provided path does not match "

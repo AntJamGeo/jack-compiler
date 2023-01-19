@@ -131,9 +131,7 @@ class CompilationEngine:
             self._assert_token("(")
             self._write_terminal()
 
-            if (self._tokenizer.token in _TYPE_KEYWORDS
-                    or self._tokenizer.token_type == "identifier"):
-                self._compile_parameter_list()
+            self._compile_parameter_list()
 
             self._assert_token(")")
             self._write_terminal()
@@ -161,19 +159,22 @@ class CompilationEngine:
         """
 
         self._open_block("parameterList")
-        self._write_terminal()
 
-        self._assert_token_type("identifier")
-        self._write_terminal()
-
-        while self._tokenizer.token == ",":
-            self._write_terminal()
-
-            self._assert_type()
+        if (self._tokenizer.token in _TYPE_KEYWORDS
+                or self._tokenizer.token_type == "identifier"):
             self._write_terminal()
 
             self._assert_token_type("identifier")
             self._write_terminal()
+
+            while self._tokenizer.token == ",":
+                self._write_terminal()
+
+                self._assert_type()
+                self._write_terminal()
+
+                self._assert_token_type("identifier")
+                self._write_terminal()
 
         self._close_block("parameterList")
 
@@ -205,6 +206,7 @@ class CompilationEngine:
             self._close_block("varDec")
 
     def _compile_statements(self):
+        self._open_block("statements")
         while True:
             if self._tokenizer.token == "let":
                 self._compile_let()
@@ -217,37 +219,230 @@ class CompilationEngine:
             elif self._tokenizer.token == "return":
                 self._compile_return()
             else:
+                self._close_block("statements")
                 return
 
     def _compile_let(self):
-        raise NotImplementedError()
+        """
+        Compile code of the form:
+        'let' var_name ('[' expression ']')? '=' expression ';'
+        """
+
+        self._open_block("letStatement")
+        self._write_terminal()
+
+        self._assert_token_type("identifier")
+        self._write_terminal()
+
+        if self._tokenizer.token == "[":
+            self._write_terminal()
+
+            self._compile_expression()
+
+            self._assert_token("]")
+            self._write_terminal()
+
+        self._assert_token("=")
+        self._write_terminal()
+
+        self._compile_expression()
+
+        self._assert_token(";")
+        self._write_terminal()
+
+        self._close_block("letStatement")
 
     def _compile_if(self):
-        raise NotImplementedError()
+        """
+        Compile code of the form:
+        'if' '(' expression ')' '{' statements '}'
+        ('else' '{' statements '}')?
+        """
+        self._open_block("ifStatement")
+        self._write_terminal()
+
+        self._assert_token("(")
+        self._write_terminal()
+
+        self._compile_expression()
+
+        self._assert_token(")")
+        self._write_terminal()
+
+        self._assert_token("{")
+        self._write_terminal()
+
+        self._compile_statements()
+
+        self._assert_token("}")
+        self._write_terminal()
+
+        if self._tokenizer.token == "else":
+            self._write_terminal()
+
+            self._assert_token("{")
+            self._write_terminal()
+
+            self._compile_statements()
+
+            self._assert_token("}")
+            self._write_terminal()
+
+        self._close_block("ifStatement")
 
     def _compile_while(self):
-        raise NotImplementedError()
+        """
+        Compile code of the form:
+        'while' '(' expression ')' '{' statements '}'
+        """
+        self._open_block("whileStatement")
+        self._write_terminal()
+
+        self._assert_token("(")
+        self._write_terminal()
+
+        self._compile_expression()
+
+        self._assert_token(")")
+        self._write_terminal()
+
+        self._assert_token("{")
+        self._write_terminal()
+
+        self._compile_statements()
+
+        self._assert_token("}")
+        self._write_terminal()
+
+        self._close_block("whileStatement")
 
     def _compile_do(self):
-        raise NotImplementedError()
+        """
+        Compile code of the form:
+        'do' subroutine_call ';'
+        """
+        self._open_block("doStatement")
+        self._write_terminal()
+
+        self._assert_token_type("identifier")
+        self._write_terminal()
+
+        if self._tokenizer.token == ".":
+            self._write_terminal()
+
+            self._assert_token_type("identifier")
+            self._write_terminal()
+
+        self._assert_token("(")
+        self._write_terminal()
+
+        self._compile_expression_list()
+
+        self._assert_token(")")
+        self._write_terminal()
+
+        self._assert_token(";")
+        self._write_terminal()
+
+        self._close_block("doStatement")
 
     def _compile_return(self):
-        raise NotImplementedError()
+        """
+        Compile code of the form:
+        'return' expression? ';'
+        """
+        self._open_block("returnStatement")
+        self._write_terminal()
+
+        if self._tokenizer.token != ";":
+            self._compile_expression()
+
+        self._assert_token(";")
+        self._write_terminal()
+
+        self._close_block("returnStatement")
 
     def _compile_expression(self):
-        raise NotImplementedError()
+        self._open_block("expression")
+
+        self._compile_term()
+
+        while self._tokenizer.token in _OPS:
+            self._write_terminal()
+            self._compile_term()
+
+        self._close_block("expression")
 
     def _compile_term(self):
-        raise NotImplementedError()
+        self._open_block("term")
+
+        if (self._tokenizer.token_type == "integerConstant"
+                or self._tokenizer.token_type == "stringConstant"
+                or self._tokenizer.token in _KEYWORD_CONSTANTS):
+            self._write_terminal()
+        elif self._tokenizer.token_type == "identifier":
+            self._write_terminal()
+            if self._tokenizer.token == "[":
+                self._write_terminal()
+
+                self._compile_expression()
+
+                self._assert_token("]")
+                self._write_terminal()
+            elif self._tokenizer.token == "(":
+                self._write_terminal()
+
+                self._compile_expression_list()
+
+                self._assert_token(")")
+                self._write_terminal()
+            elif self._tokenizer.token == ".":
+                self._write_terminal()
+
+                self._assert_token_type("identifier")
+                self._write_terminal()
+
+                self._assert_token("(")
+                self._write_terminal()
+
+                self._compile_expression_list()
+
+                self._assert_token(")")
+                self._write_terminal()
+        elif self._tokenizer.token == "(":
+            self._write_terminal()
+
+            self._compile_expression()
+
+            self._assert_token(")")
+            self._write_terminal()
+        elif self._tokenizer.token in _UNARY_OPS:
+            self._write_terminal()
+
+            self._compile_term()
+
+        self._close_block("term")
 
     def _compile_expression_list(self):
-        raise NotImplementedError()
+        self._open_block("expressionList")
+
+        if (self._tokenizer.token in _TYPE_TOKENS
+                or self._tokenizer.token_type in _TYPE_TYPES):
+            self._compile_expression()
+
+            while self._tokenizer.token == ",":
+                self._write_terminal()
+
+                self._compile_expression()
+
+        self._close_block("expressionList")
 
     # -----------------------WRITING FUNCTIONS-----------------------
     def _write_terminal(self):
         self._out_file.write(
             f"{self._indent}<{self._tokenizer.token_type}> "
-            f"{self._tokenizer.token} </{self._tokenizer.token_type}>\n"
+            f"{_XML_MAP.get(self._tokenizer.token, self._tokenizer.token)} "
+            f"</{self._tokenizer.token_type}>\n"
         )
         self._tokenizer.advance()
 
@@ -315,3 +510,9 @@ _CLASS_VAR_DEC_KEYWORDS = frozenset(("static", "field"))
 _SUBROUTINE_DEC_KEYWORDS = frozenset(("constructor", "function", "method"))
 _TYPE_KEYWORDS = frozenset(("int", "char", "boolean"))
 _SUBROUTINE_TYPE_KEYWORDS = frozenset(("void", "int", "char", "boolean"))
+_KEYWORD_CONSTANTS = frozenset(("true", "false", "null", "this"))
+_UNARY_OPS = frozenset("-~")
+_OPS = frozenset("+-*/&|<>=")
+_TYPE_TOKENS = frozenset("(") | _UNARY_OPS | _KEYWORD_CONSTANTS
+_TYPE_TYPES = frozenset(("integerConstant", "stringConstant", "identifier"))
+_XML_MAP = {"<": "&lt;", ">": "&gt;", "'": "&quot;", "&": "&amp;"}

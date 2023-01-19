@@ -53,7 +53,7 @@ class JackTokenizer:
                     self._char_no += 1
                 elif first in _DIGITS:
                     self._build_token(_DIGITS)
-                    self._token_type = "int_const"
+                    self._token_type = "integerConstant"
                 elif first in _QUOTE:
                     self._char_no += 1
                     end_of_string = self._line.find("\"", self._char_no)
@@ -63,7 +63,7 @@ class JackTokenizer:
                             f"Unclosed string on line {self._line_no}."
                         )
                     self._token = self._line[self._char_no:end_of_string]
-                    self._token_type = "string_const"
+                    self._token_type = "stringConstant"
                     self._char_no = end_of_string + 1
                 elif first in _SPACE:
                     self._char_no += 1
@@ -89,7 +89,9 @@ class JackTokenizer:
     def _is_comment(self):
         self._char_no += 1
         if self._char_no == len(self._line):
-            return
+            self._token = "/"
+            self._token_type = "symbol"
+            return False
         cur = self._line[self._char_no]
         if cur in _SLASH:
             self._go_to_next_line()

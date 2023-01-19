@@ -1,7 +1,7 @@
 import os
 
 from comptools._error import JackError
-from comptools.tokenizer import JackTokenizer
+from comptools._tokenizer import JackTokenizer
 
 
 class CompilationEngine:

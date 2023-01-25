@@ -13,18 +13,20 @@ class CompilationEngine:
     run()
         Compile the provided .jack file provided on initialisation.
     """
-    def __init__(self, file_path):
-        self._file_path = file_path
-        self._class_name = os.path.splitext(self._file_path)[0]
+    def __init__(self, in_path, xml=False):
+        self._class_name = os.path.splitext(in_path)[0]
+        self._in_path = in_path
+        self._out_path = self._class_name + (".xml" if xml else ".vm")
         self._in_file = None
         self._out_file = None
         self._tokenizer = None
         self._indent = ''
+        self._write_function = self._write_xml if xml else self._write_vm
+        self._xml = xml
 
     def __enter__(self):
-        out_path = self._class_name + ".xml"
-        self._in_file = open(self._file_path, "r")
-        self._out_file = open(out_path, "w")
+        self._in_file = open(self._in_path, "r")
+        self._out_file = open(self._out_path, "w")
         self._tokenizer = JackTokenizer(self._in_file, self._class_name)
         return self
 
@@ -41,15 +43,17 @@ class CompilationEngine:
         bool
             On successful compilation, returns True, while returns
             False on encountering an error.
+        self._out_path
+            The location of the output file.
         """
         try:
             self._tokenizer.advance()
             if self._tokenizer.has_more_tokens:
                 self._compile_class()
-            return True
+            return True, self._out_path
         except JackError as e:
             print(e.message)
-            return False
+            return False, self._out_path
 
     # ---------------------COMPILATION FUNCTIONS---------------------
     def _compile_class(self):
@@ -79,7 +83,7 @@ class CompilationEngine:
         while self._tokenizer.token in _CLASS_VAR_DEC_KEYWORDS:
             var_category = self._tokenizer.token
             self._open_block("classVarDec")
-            self._write_terminal()
+            self._write()
             self._assert_type()
             self._assert_identifier(var_category)
             while self._check_token(","):
@@ -96,7 +100,7 @@ class CompilationEngine:
         while self._tokenizer.token in _SUBROUTINE_DEC_KEYWORDS:
             subroutine_category = self._tokenizer.token
             self._open_block("subroutineDec")
-            self._write_terminal()
+            self._write()
             self._assert_subroutine_type()
             self._assert_identifier(subroutine_category)
             self._assert_token("(")
@@ -121,7 +125,7 @@ class CompilationEngine:
         self._open_block("parameterList")
         if (self._tokenizer.token in _TYPE_KEYWORDS
                 or self._tokenizer.token_type == "identifier"):
-            self._write_terminal()
+            self._write()
             self._assert_identifier("argument")
             while self._check_token(","):
                 self._assert_type()
@@ -136,7 +140,7 @@ class CompilationEngine:
 
         while self._tokenizer.token == "var":
             self._open_block("varDec")
-            self._write_terminal()
+            self._write()
             self._assert_type()
             self._assert_identifier("var")
             while self._check_token(","):
@@ -171,7 +175,7 @@ class CompilationEngine:
             'let' varName ('[' expression ']')? '=' expression ';'
         """
         self._open_block("letStatement")
-        self._write_terminal()
+        self._write()
         self._assert_identifier("var")
         if self._check_token("["):
             self._compile_expression()
@@ -188,7 +192,7 @@ class CompilationEngine:
             ('else' '{' statements '}')?
         """
         self._open_block("ifStatement")
-        self._write_terminal()
+        self._write()
         self._assert_token("(")
         self._compile_expression()
         self._assert_token(")")
@@ -207,7 +211,7 @@ class CompilationEngine:
             'while' '(' expression ')' '{' statements '}'
         """
         self._open_block("whileStatement")
-        self._write_terminal()
+        self._write()
         self._assert_token("(")
         self._compile_expression()
         self._assert_token(")")
@@ -222,7 +226,7 @@ class CompilationEngine:
             'do' subroutineCall ';'
         """
         self._open_block("doStatement")
-        self._write_terminal()
+        self._write()
         # subroutineCall of form:
             # ((className | varName) '.')?
             # subroutineName '(' expressionList ')'
@@ -234,11 +238,7 @@ class CompilationEngine:
             self._assert_identifier(write=False)
             subroutine = ".".join([subroutine, self._tokenizer.token])
             self._tokenizer.advance()
-        self._out_file.write(
-            f"{self._indent}<subroutine> "
-            f"{subroutine} "
-            "</subroutine>\n"
-        )
+        self._write(token_type="subroutine", token=subroutine, advance=False)
         self._assert_token("(")
         self._compile_expression_list()
         self._assert_token(")")
@@ -251,7 +251,7 @@ class CompilationEngine:
             'return' expression? ';'
         """
         self._open_block("returnStatement")
-        self._write_terminal()
+        self._write()
         if self._tokenizer.token != ";":
             self._compile_expression()
         self._assert_token(";")
@@ -284,7 +284,7 @@ class CompilationEngine:
         if (self._tokenizer.token_type == "integerConstant"
                 or self._tokenizer.token_type == "stringConstant"
                 or self._tokenizer.token in _KEYWORD_CONSTANTS):
-            self._write_terminal()
+            self._write()
         elif self._tokenizer.token_type == "identifier":
             name = self._tokenizer.token
             self._tokenizer.advance()
@@ -292,12 +292,12 @@ class CompilationEngine:
                 self._tokenizer.advance()
                 self._assert_identifier(write=False)
                 name = ".".join([name, self._tokenizer.token])
-                self._write_terminal("subroutine", name)
+                self._write(token_type="subroutine", token=name)
                 self._assert_token("(")
                 self._compile_expression_list()
                 self._assert_token(")")
             else:
-                self._out_file.write(f"{self._indent}<var> {name} </var>\n")
+                self._write(token_type="var", token=name, advance=False)
                 if self._check_token("["):
                     self._compile_expression()
                     self._assert_token("]")
@@ -322,7 +322,21 @@ class CompilationEngine:
         self._close_block("expressionList")
 
     # -----------------------WRITING FUNCTIONS-----------------------
-    def _write_terminal(self, token_type=None, token=None):
+    def _write(self, token_type=None, token=None, advance=True):
+        self._write_function(
+            token_type=token_type,
+            token=token,
+            advance=advance
+        )
+
+    def _write_vm(self, **kwargs):
+        if kwargs["advance"]:
+            self._tokenizer.advance()
+
+    def _write_xml(self, **kwargs):
+        token_type = kwargs["token_type"]
+        token = kwargs["token"]
+        advance = kwargs["advance"]
         if token_type is None:
             token_type = self._tokenizer.token_type
         if token is None:
@@ -332,15 +346,18 @@ class CompilationEngine:
             f"{_XML_MAP.get(token, token)} "
             f"</{token_type}>\n"
         )
-        self._tokenizer.advance()
+        if advance:
+            self._tokenizer.advance()
 
     def _open_block(self, block):
-        self._out_file.write(f"{self._indent}<{block}>\n")
-        self._indent += ' ' * _INDENT_SPACES
+        if self._xml:
+            self._out_file.write(f"{self._indent}<{block}>\n")
+            self._indent += ' ' * _INDENT_SPACES
 
     def _close_block(self, block):
-        self._indent = self._indent[:-_INDENT_SPACES]
-        self._out_file.write(f"{self._indent}</{block}>\n")
+        if self._xml:
+            self._indent = self._indent[:-_INDENT_SPACES]
+            self._out_file.write(f"{self._indent}</{block}>\n")
 
     # ----------------------ASSERTION FUNCTIONS----------------------
     def _assert_has_more_tokens(self):
@@ -358,7 +375,7 @@ class CompilationEngine:
                 f"Expected token '{token}' but got '{self._tokenizer.token}'."
             )
         if write:
-            self._write_terminal()
+            self._write()
 
     def _assert_identifier(self, category=None, write=True):
         self._assert_has_more_tokens()
@@ -371,7 +388,7 @@ class CompilationEngine:
                 )
             )
         if write:
-            self._write_terminal(category)
+            self._write(token_type=category)
 
     def _assert_type(self, write=True):
         self._assert_has_more_tokens()
@@ -382,7 +399,7 @@ class CompilationEngine:
                 "Expected a type keyword (int/char/boolean) or class name."
             )
         if write:
-            self._write_terminal()
+            self._write()
 
     def _assert_subroutine_type(self, write=True):
         self._assert_has_more_tokens()
@@ -396,13 +413,13 @@ class CompilationEngine:
                 )
             )
         if write:
-            self._write_terminal()
+            self._write()
 
     # ----------------------CHECKING FUNCTIONS-----------------------
     def _check_token(self, token, write=True):
         if self._tokenizer.token in token:
             if write:
-                self._write_terminal()
+                self._write()
             return True
         return False
 

@@ -1,18 +1,24 @@
 import sys
 import os
+import argparse
 
 from comptools import CompilationEngine
 
-def compile(basename, base_no_ext):
-    with CompilationEngine(basename) as engine:
-        success = engine.run()
+def compile(basename, base_no_ext, xml):
+    with CompilationEngine(basename, xml) as engine:
+        success, output = engine.run()
     if success:
-        print(f"File '{basename}' compiled successfully!")
+        print(f"File '{basename}' compiled to '{output}' successfully!")
     else:
-        os.remove(base_no_ext + ".xml")
+        os.remove(output)
         sys.exit(1)
 
-path = sys.argv[1]
+parser = argparse.ArgumentParser()
+parser.add_argument("-x", "--xml", action="store_true", help="output xml")
+parser.add_argument("path", help="file or directory to be compiled")
+args = parser.parse_args()
+path, xml = args.path, args.xml
+
 dirname, basename = os.path.split(path)
 base_no_ext, ext = os.path.splitext(basename)
 
@@ -24,11 +30,11 @@ if os.path.isdir(path):
         if os.path.isfile(entry.name) and ext == ".jack":
             files.append((entry.name, name_no_ext))
     for basename, base_no_ext in files:
-        compile(basename, base_no_ext)
+        compile(basename, base_no_ext, xml)
 elif os.path.isfile(path) and ext == ".jack":
     if dirname:
         os.chdir(dirname)
-    compile(basename, base_no_ext)
+    compile(basename, base_no_ext, xml)
 else:
     print(
             "Error: The provided path does not match "

@@ -15,16 +15,17 @@ class CompilationEngine:
     """
     def __init__(self, file_path):
         self._file_path = file_path
+        self._class_name = os.path.splitext(self._file_path)[0]
         self._in_file = None
         self._out_file = None
         self._tokenizer = None
         self._indent = ''
 
     def __enter__(self):
-        out_path = os.path.splitext(self._file_path)[0] + ".xml"
+        out_path = self._class_name + ".xml"
         self._in_file = open(self._file_path, "r")
         self._out_file = open(out_path, "w")
-        self._tokenizer = JackTokenizer(self._in_file, self._file_path)
+        self._tokenizer = JackTokenizer(self._in_file, self._class_name)
         return self
 
     def __exit__(self, *args):
@@ -58,18 +59,16 @@ class CompilationEngine:
         """
         self._open_block("class")
         self._assert_token("class")
-        self._assert_token_type("identifier") # className
+        self._assert_identifier("class")
         self._assert_token("{")
         self._compile_class_var_dec()
         self._compile_subroutine()
         self._assert_token("}")
         self._close_block("class")
         if self._tokenizer.has_more_tokens:
-            raise JackError(
-                self._file_path,
+            self._raise_error(
+                "Class",
                 "All code should be within a single class block."
-                f"There exists code outside of this"
-                f" on line {self._tokenizer.line_no}."
             )
 
     def _compile_class_var_dec(self):
@@ -78,12 +77,13 @@ class CompilationEngine:
             ('static' | 'field') type varName (',' varName)* ';'
         """
         while self._tokenizer.token in _CLASS_VAR_DEC_KEYWORDS:
+            var_category = self._tokenizer.token
             self._open_block("classVarDec")
             self._write_terminal()
             self._assert_type()
-            self._assert_token_type("identifier") # varName
+            self._assert_identifier(var_category)
             while self._check_token(","):
-                self._assert_token_type("identifier") # varName
+                self._assert_identifier(var_category)
             self._assert_token(";")
             self._close_block("classVarDec")
 
@@ -94,10 +94,11 @@ class CompilationEngine:
             subroutineName '(' parameterList ')' subroutineBody
         """
         while self._tokenizer.token in _SUBROUTINE_DEC_KEYWORDS:
+            subroutine_category = self._tokenizer.token
             self._open_block("subroutineDec")
             self._write_terminal()
             self._assert_subroutine_type()
-            self._assert_token_type("identifier") # subroutineName
+            self._assert_identifier(subroutine_category)
             self._assert_token("(")
             self._compile_parameter_list()
             self._assert_token(")")
@@ -121,10 +122,10 @@ class CompilationEngine:
         if (self._tokenizer.token in _TYPE_KEYWORDS
                 or self._tokenizer.token_type == "identifier"):
             self._write_terminal()
-            self._assert_token_type("identifier") # varName
+            self._assert_identifier("argument")
             while self._check_token(","):
                 self._assert_type()
-                self._assert_token_type("identifier") # varName
+                self._assert_identifier("argument")
         self._close_block("parameterList")
 
     def _compile_var_dec(self):
@@ -137,9 +138,9 @@ class CompilationEngine:
             self._open_block("varDec")
             self._write_terminal()
             self._assert_type()
-            self._assert_token_type("identifier") # varName
+            self._assert_identifier("var")
             while self._check_token(","):
-                self._assert_token_type("identifier") # varName
+                self._assert_identifier("var")
             self._assert_token(";")
             self._close_block("varDec")
 
@@ -171,7 +172,7 @@ class CompilationEngine:
         """
         self._open_block("letStatement")
         self._write_terminal()
-        self._assert_token_type("identifier") # varName
+        self._assert_identifier("var")
         if self._check_token("["):
             self._compile_expression()
             self._assert_token("]")
@@ -225,10 +226,19 @@ class CompilationEngine:
         # subroutineCall of form:
             # ((className | varName) '.')?
             # subroutineName '(' expressionList ')'
-        self._assert_token_type("identifier") # className | varName
-                                              # | subroutineName
-        if self._check_token("."):
-            self._assert_token_type("identifier") # subroutineName
+        self._assert_identifier(write=False)
+        subroutine = self._tokenizer.token
+        self._tokenizer.advance()
+        if self._check_token(".", write=False):
+            self._tokenizer.advance()
+            self._assert_identifier(write=False)
+            subroutine = ".".join([subroutine, self._tokenizer.token])
+            self._tokenizer.advance()
+        self._out_file.write(
+            f"{self._indent}<subroutine> "
+            f"{subroutine} "
+            "</subroutine>\n"
+        )
         self._assert_token("(")
         self._compile_expression_list()
         self._assert_token(")")
@@ -276,18 +286,21 @@ class CompilationEngine:
                 or self._tokenizer.token in _KEYWORD_CONSTANTS):
             self._write_terminal()
         elif self._tokenizer.token_type == "identifier":
-            self._write_terminal()
-            if self._check_token("["):
-                self._compile_expression()
-                self._assert_token("]")
-            elif self._check_token("("):
-                self._compile_expression_list()
-                self._assert_token(")")
-            elif self._check_token("."):
-                self._assert_token_type("identifier")
+            name = self._tokenizer.token
+            self._tokenizer.advance()
+            if self._check_token(".", write=False):
+                self._tokenizer.advance()
+                self._assert_identifier(write=False)
+                name = ".".join([name, self._tokenizer.token])
+                self._write_terminal("subroutine", name)
                 self._assert_token("(")
                 self._compile_expression_list()
                 self._assert_token(")")
+            else:
+                self._out_file.write(f"{self._indent}<var> {name} </var>\n")
+                if self._check_token("["):
+                    self._compile_expression()
+                    self._assert_token("]")
         elif self._check_token("("):
             self._compile_expression()
             self._assert_token(")")
@@ -309,11 +322,15 @@ class CompilationEngine:
         self._close_block("expressionList")
 
     # -----------------------WRITING FUNCTIONS-----------------------
-    def _write_terminal(self):
+    def _write_terminal(self, token_type=None, token=None):
+        if token_type is None:
+            token_type = self._tokenizer.token_type
+        if token is None:
+            token = self._tokenizer.token
         self._out_file.write(
-            f"{self._indent}<{self._tokenizer.token_type}> "
-            f"{_XML_MAP.get(self._tokenizer.token, self._tokenizer.token)} "
-            f"</{self._tokenizer.token_type}>\n"
+            f"{self._indent}<{token_type}> "
+            f"{_XML_MAP.get(token, token)} "
+            f"</{token_type}>\n"
         )
         self._tokenizer.advance()
 
@@ -327,64 +344,78 @@ class CompilationEngine:
 
     # ----------------------ASSERTION FUNCTIONS----------------------
     def _assert_has_more_tokens(self):
-        if not self._tokenizer._has_more_tokens:
-            raise JackError(
-                self._file_path,
+        if not self._tokenizer.has_more_tokens:
+            self._raise_error(
+                "Unexpected End of File",
                 "Program seems unfinished. Have you missed something?"
             )
 
-    def _assert_token(self, token):
+    def _assert_token(self, token, write=True):
         self._assert_has_more_tokens()
         if self._tokenizer.token != token:
-            raise JackError(
-                self._file_path,
-                f"On line {self._tokenizer.line_no}, "
-                f"expected token '{token}' but got '{self._tokenizer.token}'."
+            self._raise_error(
+                "Token",
+                f"Expected token '{token}' but got '{self._tokenizer.token}'."
             )
-        self._write_terminal()
+        if write:
+            self._write_terminal()
 
-    def _assert_token_type(self, type_):
+    def _assert_identifier(self, category=None, write=True):
         self._assert_has_more_tokens()
-        if self._tokenizer.token_type != type_:
-            raise JackError(
-                self._file_path,
-                f"On line {self._tokenizer.line_no}, "
-                f"expected token type '{type_}' but got "
-                f"'{self._tokenizer.token}' which is a "
-                f"'{self._tokenizer.token_type}'."
+        if self._tokenizer.token_type != "identifier":
+            self._raise_error(
+                "Identifier",
+                (
+                    "Expected an identifier but got a "
+                    f"{self._tokenizer.token_type}."
+                )
             )
-        self._write_terminal()
+        if write:
+            self._write_terminal(category)
 
-    def _assert_type(self):
+    def _assert_type(self, write=True):
         self._assert_has_more_tokens()
         if (self._tokenizer.token not in _TYPE_KEYWORDS
                 and self._tokenizer.token_type != "identifier"):
-            raise JackError(
-                self._file_path,
-                f"On line {self._tokenizer.line_no}, "
-                "expected a type (int, char, boolean, or class name) but got "
-                f"'{self._tokenizer.token}'."
+            self._raise_error(
+                "Syntax",
+                "Expected a type keyword (int/char/boolean) or class name."
             )
-        self._write_terminal()
+        if write:
+            self._write_terminal()
 
-    def _assert_subroutine_type(self):
+    def _assert_subroutine_type(self, write=True):
         self._assert_has_more_tokens()
         if (self._tokenizer.token not in _SUBROUTINE_TYPE_KEYWORDS
                 and self._tokenizer.token_type != "identifier"):
-            raise JackError(
-                self._file_path,
-                f"On line {self._tokenizer.line_no}, "
-                "expected a return type (void, int, char, boolean, or class "
-                f"name) but got '{self._tokenizer.token}'."
+            self._raise_error(
+                "Syntax",
+                (
+                    "Expected a return type (void/int/char/boolean/"
+                    f"<class name>) but got '{self._tokenizer.token}'."
+                )
             )
-        self._write_terminal()
+        if write:
+            self._write_terminal()
 
     # ----------------------CHECKING FUNCTIONS-----------------------
-    def _check_token(self, token):
+    def _check_token(self, token, write=True):
         if self._tokenizer.token in token:
-            self._write_terminal()
+            if write:
+                self._write_terminal()
             return True
         return False
+
+    # ------------------------ERROR FUNCTION-------------------------
+    def _raise_error(self, type_="Syntax", info=None):
+        raise JackError(
+                self._class_name,
+                self._tokenizer.start_line_no,
+                self._tokenizer.start_line,
+                self._tokenizer.start_char_no,
+                type_,
+                info
+                )
 
 
 _INDENT_SPACES = 2

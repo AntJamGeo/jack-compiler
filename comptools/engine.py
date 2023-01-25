@@ -2,6 +2,7 @@ import os
 
 from comptools._error import JackError
 from comptools._tokenizer import JackTokenizer
+from comptools._writer import XMLWriter, VMWriter
 
 
 class CompilationEngine:
@@ -20,14 +21,17 @@ class CompilationEngine:
         self._in_file = None
         self._out_file = None
         self._tokenizer = None
-        self._indent = ''
-        self._write_function = self._write_xml if xml else self._write_vm
+        self._writer = None
         self._xml = xml
 
     def __enter__(self):
         self._in_file = open(self._in_path, "r")
         self._out_file = open(self._out_path, "w")
         self._tokenizer = JackTokenizer(self._in_file, self._class_name)
+        self._writer = (
+            XMLWriter(self._out_file) if self._xml
+            else VMWriter(self._out_file)
+        )
         return self
 
     def __exit__(self, *args):
@@ -323,41 +327,19 @@ class CompilationEngine:
 
     # -----------------------WRITING FUNCTIONS-----------------------
     def _write(self, token_type=None, token=None, advance=True):
-        self._write_function(
-            token_type=token_type,
-            token=token,
-            advance=advance
-        )
-
-    def _write_vm(self, **kwargs):
-        if kwargs["advance"]:
-            self._tokenizer.advance()
-
-    def _write_xml(self, **kwargs):
-        token_type = kwargs["token_type"]
-        token = kwargs["token"]
-        advance = kwargs["advance"]
         if token_type is None:
             token_type = self._tokenizer.token_type
         if token is None:
             token = self._tokenizer.token
-        self._out_file.write(
-            f"{self._indent}<{token_type}> "
-            f"{_XML_MAP.get(token, token)} "
-            f"</{token_type}>\n"
-        )
+        self._writer.write(token_type=token_type, token=token)
         if advance:
             self._tokenizer.advance()
 
     def _open_block(self, block):
-        if self._xml:
-            self._out_file.write(f"{self._indent}<{block}>\n")
-            self._indent += ' ' * _INDENT_SPACES
+        self._writer.open_block(block)
 
     def _close_block(self, block):
-        if self._xml:
-            self._indent = self._indent[:-_INDENT_SPACES]
-            self._out_file.write(f"{self._indent}</{block}>\n")
+        self._writer.close_block(block)
 
     # ----------------------ASSERTION FUNCTIONS----------------------
     def _assert_has_more_tokens(self):
@@ -435,7 +417,6 @@ class CompilationEngine:
                 )
 
 
-_INDENT_SPACES = 2
 _CLASS_VAR_DEC_KEYWORDS = frozenset(("static", "field"))
 _SUBROUTINE_DEC_KEYWORDS = frozenset(("constructor", "function", "method"))
 _TYPE_KEYWORDS = frozenset(("int", "char", "boolean"))
@@ -445,4 +426,3 @@ _UNARY_OPS = frozenset("-~")
 _OPS = frozenset("+-*/&|<>=")
 _TYPE_TOKENS = frozenset("(") | _UNARY_OPS | _KEYWORD_CONSTANTS
 _TYPE_TYPES = frozenset(("integerConstant", "stringConstant", "identifier"))
-_XML_MAP = {"<": "&lt;", ">": "&gt;", "'": "&quot;", "&": "&amp;"}

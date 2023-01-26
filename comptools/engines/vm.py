@@ -31,7 +31,6 @@ class VMCompilationEngine(CompilationEngine):
         self._compile_class_var_dec()
         self._compile_subroutine()
         self._assert_token("}")
-        self._close_block("class")
         if self._tokenizer.has_more_tokens:
             self._raise_error(
                 "Class",
@@ -44,15 +43,12 @@ class VMCompilationEngine(CompilationEngine):
             ('static' | 'field') type varName (',' varName)* ';'
         """
         while self._tokenizer.token in _CLASS_VAR_DEC_KEYWORDS:
-            var_category = self._tokenizer.token
-            self._open_block("classVarDec")
-            self._write()
-            self._assert_type()
-            self._assert_identifier(var_category)
+            kind = self._get_assert()
+            type_ = self._get_assert(self._assert_type)
+            self._define(type_, kind)
             while self._check_token(","):
-                self._assert_identifier(var_category)
+                self._define(type_, kind)
             self._assert_token(";")
-            self._close_block("classVarDec")
 
     def _compile_subroutine(self):
         """
@@ -61,9 +57,9 @@ class VMCompilationEngine(CompilationEngine):
             subroutineName '(' parameterList ')' subroutineBody
         """
         while self._tokenizer.token in _SUBROUTINE_DEC_KEYWORDS:
+            self._symboltable.start_subroutine()
             subroutine_category = self._tokenizer.token
-            self._open_block("subroutineDec")
-            self._write()
+            self._tokenizer.advance()
             self._assert_subroutine_type()
             self._assert_identifier(subroutine_category)
             self._assert_token("(")
@@ -71,13 +67,10 @@ class VMCompilationEngine(CompilationEngine):
             self._assert_token(")")
             # subroutineBody of form:
                 # '{' varDec* statements '}'
-            self._open_block("subroutineBody")
             self._assert_token("{")
             self._compile_var_dec()
             self._compile_statements()
             self._assert_token("}")
-            self._close_block("subroutineBody")
-            self._close_block("subroutineDec")
 
     def _compile_parameter_list(self):
         """
@@ -85,51 +78,43 @@ class VMCompilationEngine(CompilationEngine):
             ( (type varName) (',' type varName)*)?
         """
 
-        self._open_block("parameterList")
         if (self._tokenizer.token in _TYPE_KEYWORDS
                 or self._tokenizer.token_type == "identifier"):
-            self._write()
-            self._assert_identifier("argument")
+            type_ = self._get_assert()
+            self._define(type_, "argument")
             while self._check_token(","):
-                self._assert_type()
-                self._assert_identifier("argument")
-        self._close_block("parameterList")
+                type_ = self._get_assert()
+                self._define(type_, "argument")
 
     def _compile_var_dec(self):
         """
         Compiles code of the form:
             'var' type varName (',' varName)* ';'
         """
-
-        while self._tokenizer.token == "var":
-            self._open_block("varDec")
-            self._write()
-            self._assert_type()
-            self._assert_identifier("var")
+        while self._check_token("var"):
+            type_ = self._get_assert(self._assert_type)
+            self._define(type_, "var")
             while self._check_token(","):
-                self._assert_identifier("var")
+                self._define(type_, "var")
             self._assert_token(";")
-            self._close_block("varDec")
 
     def _compile_statements(self):
         """
         Compiles a series of statements, which must begin with the
         keywords: 'let', 'if', 'while', 'do', or 'return'.
         """
-        self._open_block("statements")
         while True:
-            if self._tokenizer.token == "let":
+            if self._check_token("let"):
                 self._compile_let()
-            elif self._tokenizer.token == "if":
+            elif self._check_token("if"):
                 self._compile_if()
-            elif self._tokenizer.token == "while":
+            elif self._check_token("while"):
                 self._compile_while()
-            elif self._tokenizer.token == "do":
+            elif self._check_token("do"):
                 self._compile_do()
-            elif self._tokenizer.token == "return":
+            elif self._check_token("return"):
                 self._compile_return()
             else:
-                self._close_block("statements")
                 return
 
     def _compile_let(self):
@@ -137,8 +122,6 @@ class VMCompilationEngine(CompilationEngine):
         Compile code of the form:
             'let' varName ('[' expression ']')? '=' expression ';'
         """
-        self._open_block("letStatement")
-        self._write()
         self._assert_identifier("var")
         if self._check_token("["):
             self._compile_expression()
@@ -146,7 +129,6 @@ class VMCompilationEngine(CompilationEngine):
         self._assert_token("=")
         self._compile_expression()
         self._assert_token(";")
-        self._close_block("letStatement")
 
     def _compile_if(self):
         """
@@ -154,8 +136,6 @@ class VMCompilationEngine(CompilationEngine):
             'if' '(' expression ')' '{' statements '}'
             ('else' '{' statements '}')?
         """
-        self._open_block("ifStatement")
-        self._write()
         self._assert_token("(")
         self._compile_expression()
         self._assert_token(")")
@@ -166,39 +146,33 @@ class VMCompilationEngine(CompilationEngine):
             self._assert_token("{")
             self._compile_statements()
             self._assert_token("}")
-        self._close_block("ifStatement")
 
     def _compile_while(self):
         """
         Compile code of the form:
             'while' '(' expression ')' '{' statements '}'
         """
-        self._open_block("whileStatement")
-        self._write()
         self._assert_token("(")
         self._compile_expression()
         self._assert_token(")")
         self._assert_token("{")
         self._compile_statements()
         self._assert_token("}")
-        self._close_block("whileStatement")
 
     def _compile_do(self):
         """
         Compile code of the form:
             'do' subroutineCall ';'
         """
-        self._open_block("doStatement")
-        self._write()
         # subroutineCall of form:
             # ((className | varName) '.')?
             # subroutineName '(' expressionList ')'
-        self._assert_identifier(write=False)
+        self._assert_identifier(advance=False)
         subroutine = self._tokenizer.token
         self._tokenizer.advance()
-        if self._check_token(".", write=False):
+        if self._check_token(".", advance=False):
             self._tokenizer.advance()
-            self._assert_identifier(write=False)
+            self._assert_identifier(advance=False)
             subroutine = ".".join([subroutine, self._tokenizer.token])
             self._tokenizer.advance()
         self._write(token_type="subroutine", token=subroutine, advance=False)
@@ -206,19 +180,15 @@ class VMCompilationEngine(CompilationEngine):
         self._compile_expression_list()
         self._assert_token(")")
         self._assert_token(";")
-        self._close_block("doStatement")
 
     def _compile_return(self):
         """
         Compile code of the form:
             'return' expression? ';'
         """
-        self._open_block("returnStatement")
-        self._write()
         if self._tokenizer.token != ";":
             self._compile_expression()
         self._assert_token(";")
-        self._close_block("returnStatement")
 
     def _compile_expression(self):
         """
@@ -251,9 +221,9 @@ class VMCompilationEngine(CompilationEngine):
         elif self._tokenizer.token_type == "identifier":
             name = self._tokenizer.token
             self._tokenizer.advance()
-            if self._check_token(".", write=False):
+            if self._check_token(".", advance=False):
                 self._tokenizer.advance()
-                self._assert_identifier(write=False)
+                self._assert_identifier(advance=False)
                 name = ".".join([name, self._tokenizer.token])
                 self._write(token_type="subroutine", token=name)
                 self._assert_token("(")
@@ -285,7 +255,8 @@ class VMCompilationEngine(CompilationEngine):
         self._close_block("expressionList")
 
     # -----------------------WRITING FUNCTIONS-----------------------
-    def _write(self, advance=True, **kwargs):
+    def _write(self, stuff=".", advance=True, *args, **kwargs):
+        self._writer.write(stuff)
         if advance:
             self._tokenizer.advance()
 
@@ -294,35 +265,47 @@ class VMCompilationEngine(CompilationEngine):
 
     def _close_block(self, block):
         pass
-
     # ----------------------ASSERTION FUNCTIONS----------------------
-    def _assert_token(self, token, write=True):
+    def _assert_token(self, token, advance=True):
         super()._assert_token(token)
-        if write:
+        if advance:
             self._tokenizer.advance()
 
-    def _assert_identifier(self, category=None, write=True):
+    def _assert_identifier(self, advance=True):
         super()._assert_identifier()
-        if write:
+        if advance:
             self._tokenizer.advance()
 
-    def _assert_type(self, write=True):
+    def _assert_type(self, advance=True):
         super()._assert_type()
-        if write:
+        if advance:
             self._tokenizer.advance()
 
-    def _assert_subroutine_type(self, write=True):
+    def _assert_subroutine_type(self, advance=True):
         super()._assert_subroutine_type()
-        if write:
+        if advance:
             self._tokenizer.advance()
 
     # ----------------------CHECKING FUNCTIONS-----------------------
-    def _check_token(self, token, write=True):
+    def _check_token(self, token, advance=True):
         if self._tokenizer.token in token:
-            if write:
-                self._write()
+            if advance:
+                self._tokenizer.advance()
             return True
         return False
+
+    # ------------------------OTHER FUNCTIONS------------------------
+    def _define(self, type_, kind):
+        name = self._get_assert(self._assert_identifier)
+        self._symboltable.define(name, type_, kind)
+
+    def _get_assert(self, assertion=None):
+        val = self._tokenizer.token
+        if assertion is None:
+            self._tokenizer.advance()
+        else:
+            assertion()
+        return val
 
 
 _CLASS_VAR_DEC_KEYWORDS = frozenset(("static", "field"))

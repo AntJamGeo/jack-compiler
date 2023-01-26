@@ -1,1 +1,2 @@
-from comptools.engine import CompilationEngine
+from comptools.engine import CompilationEngineXML
+from comptools.engine import CompilationEngineVM

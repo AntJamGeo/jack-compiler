@@ -4,27 +4,14 @@ from comptools._error import JackError
 from comptools._tokenizer import JackTokenizer
 
 
-class CompilationEngineVM:
-    def __init__(self, in_path):
-        pass
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *args):
-        pass
-
-    def run(self):
-        return True, ""
-
 class CompilationEngineXML:
     """
-    Compile a .jack file.
+    Compile a .jack file into a .xml file showing each token.
 
     Methods
     -------
     run()
-        Compile the provided .jack file provided on initialisation.
+        Compile the .jack file provided on initialisation to xml.
     """
     def __init__(self, in_path):
         self._class_name = os.path.splitext(in_path)[0]

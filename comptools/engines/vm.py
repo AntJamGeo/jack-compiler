@@ -1,10 +1,12 @@
 import os
 
 from comptools._error import JackError
-from comptools._tokenizer import JackTokenizer
+from comptools.engines._base import CompilationEngine
+from comptools._writers._vm import VMWriter
+from comptools._symboltable import SymbolTable
 
 
-class CompilationEngineVM:
+class VMCompilationEngine(CompilationEngine):
     """
     Compile a .jack file into virtual machine code.
 
@@ -14,45 +16,9 @@ class CompilationEngineVM:
         Compile the .jack file provided on initialisation into
         virtual machine code.
     """
-    def __init__(self, in_path):
-        self._class_name = os.path.splitext(in_path)[0]
-        self._in_path = in_path
-        self._out_path = self._class_name + ".vm"
-        self._in_file = None
-        self._out_file = None
-        self._tokenizer = None
-        self._indent = ''
-
-    def __enter__(self):
-        self._in_file = open(self._in_path, "r")
-        self._out_file = open(self._out_path, "w")
-        self._tokenizer = JackTokenizer(self._in_file, self._class_name)
-        return self
-
-    def __exit__(self, *args):
-        self._in_file.close()
-        self._out_file.close()
-
-    def run(self):
-        """
-        Compile the provided .jack file provided on initialisation.
-
-        Returns
-        -------
-        bool
-            On successful compilation, returns True, while returns
-            False on encountering an error.
-        self._out_path
-            The location of the output file.
-        """
-        try:
-            self._tokenizer.advance()
-            if self._tokenizer.has_more_tokens:
-                self._compile_class()
-            return True, self._out_path
-        except JackError as e:
-            print(e.message)
-            return False, self._out_path
+    def __init__(self):
+        super().__init__(VMWriter())
+        self._symboltable = SymbolTable()
 
     # ---------------------COMPILATION FUNCTIONS---------------------
     def _compile_class(self):
@@ -326,21 +292,15 @@ class CompilationEngineVM:
             token_type = self._tokenizer.token_type
         if token is None:
             token = self._tokenizer.token
-        self._out_file.write(
-            f"{self._indent}<{token_type}> "
-            f"{_XML_MAP.get(token, token)} "
-            f"</{token_type}>\n"
-        )
+        self._writer.write(token_type, token)
         if advance:
             self._tokenizer.advance()
 
     def _open_block(self, block):
-        self._out_file.write(f"{self._indent}<{block}>\n")
-        self._indent += ' ' * _INDENT_SPACES
+        pass
 
     def _close_block(self, block):
-        self._indent = self._indent[:-_INDENT_SPACES]
-        self._out_file.write(f"{self._indent}</{block}>\n")
+        pass
 
     # ----------------------ASSERTION FUNCTIONS----------------------
     def _assert_has_more_tokens(self):
@@ -427,5 +387,3 @@ _UNARY_OPS = frozenset("-~")
 _OPS = frozenset("+-*/&|<>=")
 _TYPE_TOKENS = frozenset("(") | _UNARY_OPS | _KEYWORD_CONSTANTS
 _TYPE_TYPES = frozenset(("integerConstant", "stringConstant", "identifier"))
-_INDENT_SPACES = 2
-_XML_MAP = {"<": "&lt;", ">": "&gt;", "'": "&quot;", "&": "&amp;"}

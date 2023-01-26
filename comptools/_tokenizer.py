@@ -29,9 +29,13 @@ class JackTokenizer:
     advance()
         Advances to the next token in the file.
     """
-    def __init__(self, file, class_name):
-        self._file = file
-        self._class_name = class_name
+    def __init__(self):
+        self._reset()
+
+    def _reset(self):
+        self._class_name = None
+        self.file_name = None
+        self._file = None
         self._has_more_tokens = True
         self._token = None
         self._token_type = None
@@ -39,6 +43,18 @@ class JackTokenizer:
         self._line_no = 0
         self._char_no = 0
         self._start_index = 0
+
+    def load_class(self, class_name):
+        self._reset()
+        self._class_name = class_name
+        self.file_name = class_name + ".jack"
+
+    def __enter__(self):
+        self._file = open(self.file_name, "r")
+        return self
+
+    def __exit__(self, *args):
+        self._file.close()
 
     def advance(self):
         """Advance to the next token in the file."""

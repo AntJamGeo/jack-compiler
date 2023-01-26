@@ -1,8 +1,7 @@
 import os
 
-from comptools._error import JackError
 from comptools.engines._base import CompilationEngine
-from comptools._writers._xml import XMLWriter
+from comptools._writers import XMLWriter
 
 
 class XMLCompilationEngine(CompilationEngine):
@@ -24,12 +23,12 @@ class XMLCompilationEngine(CompilationEngine):
             'class' className '{' classVarDec* subroutineDec* '}'
         """
         self._open_block("class")
-        self._assert_token("class")
-        self._assert_identifier("class")
-        self._assert_token("{")
+        self._write_token("class")
+        self._write_identifier("class")
+        self._write_token("{")
         self._compile_class_var_dec()
         self._compile_subroutine()
-        self._assert_token("}")
+        self._write_token("}")
         self._close_block("class")
         if self._tokenizer.has_more_tokens:
             self._raise_error(
@@ -46,11 +45,11 @@ class XMLCompilationEngine(CompilationEngine):
             var_category = self._tokenizer.token
             self._open_block("classVarDec")
             self._write()
-            self._assert_type()
-            self._assert_identifier(var_category)
+            self._write_type()
+            self._write_identifier(var_category)
             while self._check_token(","):
-                self._assert_identifier(var_category)
-            self._assert_token(";")
+                self._write_identifier(var_category)
+            self._write_token(";")
             self._close_block("classVarDec")
 
     def _compile_subroutine(self):
@@ -63,18 +62,18 @@ class XMLCompilationEngine(CompilationEngine):
             subroutine_category = self._tokenizer.token
             self._open_block("subroutineDec")
             self._write()
-            self._assert_subroutine_type()
-            self._assert_identifier(subroutine_category)
-            self._assert_token("(")
+            self._write_subroutine_type()
+            self._write_identifier(subroutine_category)
+            self._write_token("(")
             self._compile_parameter_list()
-            self._assert_token(")")
+            self._write_token(")")
             # subroutineBody of form:
                 # '{' varDec* statements '}'
             self._open_block("subroutineBody")
-            self._assert_token("{")
+            self._write_token("{")
             self._compile_var_dec()
             self._compile_statements()
-            self._assert_token("}")
+            self._write_token("}")
             self._close_block("subroutineBody")
             self._close_block("subroutineDec")
 
@@ -88,10 +87,10 @@ class XMLCompilationEngine(CompilationEngine):
         if (self._tokenizer.token in _TYPE_KEYWORDS
                 or self._tokenizer.token_type == "identifier"):
             self._write()
-            self._assert_identifier("argument")
+            self._write_identifier("argument")
             while self._check_token(","):
-                self._assert_type()
-                self._assert_identifier("argument")
+                self._write_type()
+                self._write_identifier("argument")
         self._close_block("parameterList")
 
     def _compile_var_dec(self):
@@ -103,11 +102,11 @@ class XMLCompilationEngine(CompilationEngine):
         while self._tokenizer.token == "var":
             self._open_block("varDec")
             self._write()
-            self._assert_type()
-            self._assert_identifier("var")
+            self._write_type()
+            self._write_identifier("var")
             while self._check_token(","):
-                self._assert_identifier("var")
-            self._assert_token(";")
+                self._write_identifier("var")
+            self._write_token(";")
             self._close_block("varDec")
 
     def _compile_statements(self):
@@ -138,13 +137,13 @@ class XMLCompilationEngine(CompilationEngine):
         """
         self._open_block("letStatement")
         self._write()
-        self._assert_identifier("var")
+        self._write_identifier("var")
         if self._check_token("["):
             self._compile_expression()
-            self._assert_token("]")
-        self._assert_token("=")
+            self._write_token("]")
+        self._write_token("=")
         self._compile_expression()
-        self._assert_token(";")
+        self._write_token(";")
         self._close_block("letStatement")
 
     def _compile_if(self):
@@ -155,16 +154,16 @@ class XMLCompilationEngine(CompilationEngine):
         """
         self._open_block("ifStatement")
         self._write()
-        self._assert_token("(")
+        self._write_token("(")
         self._compile_expression()
-        self._assert_token(")")
-        self._assert_token("{")
+        self._write_token(")")
+        self._write_token("{")
         self._compile_statements()
-        self._assert_token("}")
+        self._write_token("}")
         if self._check_token("else"):
-            self._assert_token("{")
+            self._write_token("{")
             self._compile_statements()
-            self._assert_token("}")
+            self._write_token("}")
         self._close_block("ifStatement")
 
     def _compile_while(self):
@@ -174,12 +173,12 @@ class XMLCompilationEngine(CompilationEngine):
         """
         self._open_block("whileStatement")
         self._write()
-        self._assert_token("(")
+        self._write_token("(")
         self._compile_expression()
-        self._assert_token(")")
-        self._assert_token("{")
+        self._write_token(")")
+        self._write_token("{")
         self._compile_statements()
-        self._assert_token("}")
+        self._write_token("}")
         self._close_block("whileStatement")
 
     def _compile_do(self):
@@ -192,19 +191,23 @@ class XMLCompilationEngine(CompilationEngine):
         # subroutineCall of form:
             # ((className | varName) '.')?
             # subroutineName '(' expressionList ')'
-        self._assert_identifier(write=False)
-        subroutine = self._tokenizer.token
+        self._assert_identifier()
+        identifier = self._tokenizer.token
         self._tokenizer.advance()
         if self._check_token(".", write=False):
-            self._tokenizer.advance()
-            self._assert_identifier(write=False)
-            subroutine = ".".join([subroutine, self._tokenizer.token])
-            self._tokenizer.advance()
-        self._write(token_type="subroutine", token=subroutine, advance=False)
-        self._assert_token("(")
+            self._write(token_type="var", token=identifier, advance=False)
+            self._write()
+            self._write_identifier(category="subroutine")
+        else:
+            self._write(
+                token_type="subroutine",
+                token=identifier,
+                advance=False
+            )
+        self._write_token("(")
         self._compile_expression_list()
-        self._assert_token(")")
-        self._assert_token(";")
+        self._write_token(")")
+        self._write_token(";")
         self._close_block("doStatement")
 
     def _compile_return(self):
@@ -216,7 +219,7 @@ class XMLCompilationEngine(CompilationEngine):
         self._write()
         if self._tokenizer.token != ";":
             self._compile_expression()
-        self._assert_token(";")
+        self._write_token(";")
         self._close_block("returnStatement")
 
     def _compile_expression(self):
@@ -248,24 +251,18 @@ class XMLCompilationEngine(CompilationEngine):
                 or self._tokenizer.token in _KEYWORD_CONSTANTS):
             self._write()
         elif self._tokenizer.token_type == "identifier":
-            name = self._tokenizer.token
-            self._tokenizer.advance()
-            if self._check_token(".", write=False):
-                self._tokenizer.advance()
-                self._assert_identifier(write=False)
-                name = ".".join([name, self._tokenizer.token])
-                self._write(token_type="subroutine", token=name)
-                self._assert_token("(")
+            self._write_identifier(category="var")
+            if self._check_token("."):
+                self._write_identifier(category="subroutine")
+                self._write_token("(")
                 self._compile_expression_list()
-                self._assert_token(")")
-            else:
-                self._write(token_type="var", token=name, advance=False)
-                if self._check_token("["):
-                    self._compile_expression()
-                    self._assert_token("]")
+                self._write_token(")")
+            elif self._check_token("["):
+                self._compile_expression()
+                self._write_token("]")
         elif self._check_token("("):
             self._compile_expression()
-            self._assert_token(")")
+            self._write_token(")")
         elif self._check_token(_UNARY_OPS):
             self._compile_term()
         self._close_block("term")
@@ -293,67 +290,27 @@ class XMLCompilationEngine(CompilationEngine):
         if advance:
             self._tokenizer.advance()
 
+    def _write_token(self, token):
+        super()._assert_token(token)
+        self._write()
+
+    def _write_identifier(self, category=None):
+        super()._assert_identifier()
+        self._write(token_type=category)
+
+    def _write_type(self):
+        super()._assert_type()
+        self._write()
+
+    def _write_subroutine_type(self):
+        super()._assert_subroutine_type()
+        self._write()
+
     def _open_block(self, block):
         self._writer.open_block(block)
 
     def _close_block(self, block):
         self._writer.close_block(block)
-
-    # ----------------------ASSERTION FUNCTIONS----------------------
-    def _assert_has_more_tokens(self):
-        if not self._tokenizer.has_more_tokens:
-            self._raise_error(
-                "Unexpected End of File",
-                "Program seems unfinished. Have you missed something?"
-            )
-
-    def _assert_token(self, token, write=True):
-        self._assert_has_more_tokens()
-        if self._tokenizer.token != token:
-            self._raise_error(
-                "Token",
-                f"Expected token '{token}' but got '{self._tokenizer.token}'."
-            )
-        if write:
-            self._write()
-
-    def _assert_identifier(self, category=None, write=True):
-        self._assert_has_more_tokens()
-        if self._tokenizer.token_type != "identifier":
-            self._raise_error(
-                "Identifier",
-                (
-                    "Expected an identifier but got a "
-                    f"{self._tokenizer.token_type}."
-                )
-            )
-        if write:
-            self._write(token_type=category)
-
-    def _assert_type(self, write=True):
-        self._assert_has_more_tokens()
-        if (self._tokenizer.token not in _TYPE_KEYWORDS
-                and self._tokenizer.token_type != "identifier"):
-            self._raise_error(
-                "Syntax",
-                "Expected a type keyword (int/char/boolean) or class name."
-            )
-        if write:
-            self._write()
-
-    def _assert_subroutine_type(self, write=True):
-        self._assert_has_more_tokens()
-        if (self._tokenizer.token not in _SUBROUTINE_TYPE_KEYWORDS
-                and self._tokenizer.token_type != "identifier"):
-            self._raise_error(
-                "Syntax",
-                (
-                    "Expected a return type (void/int/char/boolean/"
-                    f"<class name>) but got '{self._tokenizer.token}'."
-                )
-            )
-        if write:
-            self._write()
 
     # ----------------------CHECKING FUNCTIONS-----------------------
     def _check_token(self, token, write=True):
@@ -362,17 +319,6 @@ class XMLCompilationEngine(CompilationEngine):
                 self._write()
             return True
         return False
-
-    # ------------------------ERROR FUNCTION-------------------------
-    def _raise_error(self, type_="Syntax", info=None):
-        raise JackError(
-                self._class_name,
-                self._tokenizer.start_line_no,
-                self._tokenizer.start_line,
-                self._tokenizer.start_char_no,
-                type_,
-                info
-                )
 
 
 _CLASS_VAR_DEC_KEYWORDS = frozenset(("static", "field"))

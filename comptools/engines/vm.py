@@ -1,8 +1,7 @@
 import os
 
-from comptools._error import JackError
 from comptools.engines._base import CompilationEngine
-from comptools._writers._vm import VMWriter
+from comptools._writers import VMWriter
 from comptools._symboltable import SymbolTable
 
 
@@ -26,7 +25,6 @@ class VMCompilationEngine(CompilationEngine):
         Compiles code of the form:
             'class' className '{' classVarDec* subroutineDec* '}'
         """
-        self._open_block("class")
         self._assert_token("class")
         self._assert_identifier("class")
         self._assert_token("{")
@@ -287,12 +285,7 @@ class VMCompilationEngine(CompilationEngine):
         self._close_block("expressionList")
 
     # -----------------------WRITING FUNCTIONS-----------------------
-    def _write(self, token_type=None, token=None, advance=True):
-        if token_type is None:
-            token_type = self._tokenizer.token_type
-        if token is None:
-            token = self._tokenizer.token
-        self._writer.write(token_type, token)
+    def _write(self, advance=True, **kwargs):
         if advance:
             self._tokenizer.advance()
 
@@ -303,60 +296,25 @@ class VMCompilationEngine(CompilationEngine):
         pass
 
     # ----------------------ASSERTION FUNCTIONS----------------------
-    def _assert_has_more_tokens(self):
-        if not self._tokenizer.has_more_tokens:
-            self._raise_error(
-                "Unexpected End of File",
-                "Program seems unfinished. Have you missed something?"
-            )
-
     def _assert_token(self, token, write=True):
-        self._assert_has_more_tokens()
-        if self._tokenizer.token != token:
-            self._raise_error(
-                "Token",
-                f"Expected token '{token}' but got '{self._tokenizer.token}'."
-            )
+        super()._assert_token(token)
         if write:
-            self._write()
+            self._tokenizer.advance()
 
     def _assert_identifier(self, category=None, write=True):
-        self._assert_has_more_tokens()
-        if self._tokenizer.token_type != "identifier":
-            self._raise_error(
-                "Identifier",
-                (
-                    "Expected an identifier but got a "
-                    f"{self._tokenizer.token_type}."
-                )
-            )
+        super()._assert_identifier()
         if write:
-            self._write(token_type=category)
+            self._tokenizer.advance()
 
     def _assert_type(self, write=True):
-        self._assert_has_more_tokens()
-        if (self._tokenizer.token not in _TYPE_KEYWORDS
-                and self._tokenizer.token_type != "identifier"):
-            self._raise_error(
-                "Syntax",
-                "Expected a type keyword (int/char/boolean) or class name."
-            )
+        super()._assert_type()
         if write:
-            self._write()
+            self._tokenizer.advance()
 
     def _assert_subroutine_type(self, write=True):
-        self._assert_has_more_tokens()
-        if (self._tokenizer.token not in _SUBROUTINE_TYPE_KEYWORDS
-                and self._tokenizer.token_type != "identifier"):
-            self._raise_error(
-                "Syntax",
-                (
-                    "Expected a return type (void/int/char/boolean/"
-                    f"<class name>) but got '{self._tokenizer.token}'."
-                )
-            )
+        super()._assert_subroutine_type()
         if write:
-            self._write()
+            self._tokenizer.advance()
 
     # ----------------------CHECKING FUNCTIONS-----------------------
     def _check_token(self, token, write=True):
@@ -365,17 +323,6 @@ class VMCompilationEngine(CompilationEngine):
                 self._write()
             return True
         return False
-
-    # ------------------------ERROR FUNCTION-------------------------
-    def _raise_error(self, type_="Syntax", info=None):
-        raise JackError(
-                self._class_name,
-                self._tokenizer.start_line_no,
-                self._tokenizer.start_line,
-                self._tokenizer.start_char_no,
-                type_,
-                info
-                )
 
 
 _CLASS_VAR_DEC_KEYWORDS = frozenset(("static", "field"))

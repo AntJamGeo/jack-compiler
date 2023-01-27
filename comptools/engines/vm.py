@@ -18,6 +18,7 @@ class VMCompilationEngine(CompilationEngine):
     def __init__(self):
         super().__init__(VMWriter())
         self._symboltable = None
+        self._branch_count = 0
 
     # ---------------------COMPILATION FUNCTIONS---------------------
     def _compile_class(self):
@@ -151,28 +152,44 @@ class VMCompilationEngine(CompilationEngine):
             'if' '(' expression ')' '{' statements '}'
             ('else' '{' statements '}')?
         """
+        self._branch_count += 1
+        else_label = f"ELSE_BRANCH.{self._branch_count}"
+        end_label = f"END_BRANCH.{self._branch_count}"
         self._assert_token("(")
         self._compile_expression()
         self._assert_token(")")
+        self._writer.arithmetic("not")
+        self._writer.if_goto(else_label)
         self._assert_token("{")
         self._compile_statements()
         self._assert_token("}")
+        self._writer.goto(end_label)
+        self._writer.label(else_label)
         if self._check_token("else"):
             self._assert_token("{")
             self._compile_statements()
             self._assert_token("}")
+        self._writer.label(end_label)
 
     def _compile_while(self):
         """
         Compile code of the form:
             'while' '(' expression ')' '{' statements '}'
         """
+        self._branch_count += 1
+        loop_label = f"LOOP_BRANCH.{self._branch_count}"
+        break_label = f"BREAK_BRANCH.{self._branch_count}"
+        self._writer.label(loop_label)
         self._assert_token("(")
         self._compile_expression()
         self._assert_token(")")
+        self._writer.arithmetic("not")
+        self._writer.if_goto(break_label)
         self._assert_token("{")
         self._compile_statements()
         self._assert_token("}")
+        self._writer.goto(loop_label)
+        self._writer.label(break_label)
 
     def _compile_do(self):
         """

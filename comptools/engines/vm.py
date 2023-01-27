@@ -126,11 +126,23 @@ class VMCompilationEngine(CompilationEngine):
             'let' varName ('[' expression ']')? '=' expression ';'
         """
         name = self._get_assert(self._assert_identifier)
+        var = self._get_var(name, prev=True)
+        is_arr = False
         if self._check_token("["):
+            is_arr = True
+            self._writer.push(var["kind"], var["index"])
             self._compile_expression()
+            self._writer.arithmetic("add")
             self._assert_token("]")
         self._assert_token("=")
         self._compile_expression()
+        if is_arr:
+            self._writer.pop("temp", 0)
+            self._writer.pop("pointer", 1)
+            self._writer.push("temp", 0)
+            self._writer.pop("that", 0)
+        else:
+            self._writer.pop(var["kind"], var["index"])
         self._assert_token(";")
 
     def _compile_if(self):
@@ -178,7 +190,6 @@ class VMCompilationEngine(CompilationEngine):
             self._assert_identifier(advance=False)
             subroutine = ".".join([subroutine, self._tokenizer.token])
             self._tokenizer.advance()
-        self._write(token_type="subroutine", token=subroutine, advance=False)
         self._assert_token("(")
         self._compile_expression_list()
         self._assert_token(")")
@@ -191,6 +202,10 @@ class VMCompilationEngine(CompilationEngine):
         """
         if self._tokenizer.token != ";":
             self._compile_expression()
+            self._writer.ret()
+        else:
+            self._writer.push("constant", 0)
+            self._writer.ret()
         self._assert_token(";")
 
     def _compile_expression(self):
@@ -284,17 +299,6 @@ class VMCompilationEngine(CompilationEngine):
                 n += 1
         return n
 
-    # -----------------------WRITING FUNCTIONS-----------------------
-    def _write(self, stuff=".", advance=True, *args, **kwargs):
-        self._writer.write(stuff)
-        if advance:
-            self._tokenizer.advance()
-
-    def _open_block(self, block):
-        pass
-
-    def _close_block(self, block):
-        pass
     # ----------------------ASSERTION FUNCTIONS----------------------
     def _assert_token(self, token, advance=True, prev=False):
         super()._assert_token(token, prev)

@@ -74,6 +74,12 @@ class JackTokenizer:
                 self._go_to_next_line()
             else:
                 first = self._line[self._char_no]
+                if first in _SPACE:
+                    self._char_no += 1
+                    continue
+                elif first in _SLASH:
+                    if self._is_comment():
+                        continue
                 self._prev_start_line = self._start_line
                 self._prev_start_line_no = self._start_line_no
                 self._prev_start_char_no = self._start_char_no
@@ -100,12 +106,6 @@ class JackTokenizer:
                     self._token = self._line[self._char_no:end_of_string]
                     self._token_type = "stringConstant"
                     self._char_no = end_of_string + 1
-                elif first in _SPACE:
-                    self._char_no += 1
-                    continue
-                elif first in _SLASH:
-                    if self._is_comment():
-                        continue
                 else:
                     self._raise_error("Unidentified Character")
                 return
@@ -120,8 +120,6 @@ class JackTokenizer:
     def _is_comment(self):
         self._char_no += 1
         if self._char_no == len(self._line):
-            self._token = "/"
-            self._token_type = "symbol"
             return False
         cur = self._line[self._char_no]
         if cur in _SLASH:
@@ -138,8 +136,6 @@ class JackTokenizer:
             else:
                 self._raise_error("Unclosed Multiline Comment")
         else:
-            self._token = "/"
-            self._token_type = "symbol"
             return False
         return True
 
@@ -203,7 +199,7 @@ class JackTokenizer:
 
 _START_WORD_CHARS = frozenset(
         "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM_")
-_SYMBOLS = frozenset("{}()[].,;+-*&|<>=~")
+_SYMBOLS = frozenset("{}()[].,;+-*/&|<>=~")
 _DIGITS = frozenset("1234567890")
 _QUOTE = frozenset("\"")
 _WORD_CHARS = _START_WORD_CHARS | _DIGITS

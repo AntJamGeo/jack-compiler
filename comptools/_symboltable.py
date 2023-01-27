@@ -1,18 +1,21 @@
+from comptools._error import JackError
+
+
 class SymbolTable:
     def __init__(self):
         self._class_table = {}
         self._subroutine_table = {}
         self._var_count = {
             "static": 0,
-            "field": 0,
+            "this": 0,
             "argument": 0,
-            "var": 0
+            "local": 0
         }
 
     def start_subroutine(self):
         self._subroutine_table = {}
         self._var_count["argument"] = 0
-        self._var_count["var"] = 0
+        self._var_count["local"] = 0
 
     def define(self, name, type_, kind):
         if kind in _CLASS_VAR:
@@ -31,21 +34,12 @@ class SymbolTable:
             raise KeyError(f"Invalid variable kind: {kind}.")
         self._var_count[kind] += 1
 
-    def kind_of(self, name):
-        return self._get_variable(name)["kind"]
-
-    def type_of(self, name):
-        return self._get_variable(name)["type"]
-
-    def index_of(self, name):
-        return self._get_variable(name)["index"]
-
-    def _get_variable(self, name):
+    def get_var(self, name):
         variable = self._subroutine_table.get(name)
         if variable is None:
             variable = self._class_table.get(name)
         return variable
 
 
-_CLASS_VAR = frozenset(("static", "field"))
-_SUBROUTINE_VAR = frozenset(("argument", "var"))
+_CLASS_VAR = frozenset(("static", "this"))
+_SUBROUTINE_VAR = frozenset(("argument", "local"))

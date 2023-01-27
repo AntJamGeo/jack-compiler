@@ -23,6 +23,12 @@ class JackTokenizer:
         The start line number of the current token
     start_char_no : int
         The start char number of the current token
+    prev_start_line : str
+        The start line of the previous token
+    prev_start_line_no : int
+        The start line number of the previous token
+    prev_start_char_no : int
+        The start char number of the previous token
 
     Methods
     -------
@@ -42,7 +48,12 @@ class JackTokenizer:
         self._line = ""
         self._line_no = 0
         self._char_no = 0
-        self._start_index = 0
+        self._start_line = ""
+        self._start_line_no = 0
+        self._start_char_no = 0
+        self._prev_start_line = ""
+        self._prev_start_line_no = 0
+        self._prev_start_char_no = 0
 
     def load_class(self, class_name):
         self._reset()
@@ -63,8 +74,11 @@ class JackTokenizer:
                 self._go_to_next_line()
             else:
                 first = self._line[self._char_no]
-                self._start_line_no = self._line_no
+                self._prev_start_line = self._start_line
+                self._prev_start_line_no = self._start_line_no
+                self._prev_start_char_no = self._start_char_no
                 self._start_line = self._line
+                self._start_line_no = self._line_no
                 self._start_char_no = self._char_no
                 if first in _START_WORD_CHARS:
                     self._build_token(_WORD_CHARS)
@@ -173,6 +187,18 @@ class JackTokenizer:
     @property
     def start_char_no(self):
         return self._start_char_no
+
+    @property
+    def prev_start_line(self):
+        return self._prev_start_line
+
+    @property
+    def prev_start_line_no(self):
+        return self._prev_start_line_no
+
+    @property
+    def prev_start_char_no(self):
+        return self._prev_start_char_no
 
 
 _START_WORD_CHARS = frozenset(

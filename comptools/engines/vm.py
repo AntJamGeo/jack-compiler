@@ -17,7 +17,7 @@ class VMCompilationEngine(CompilationEngine):
     """
     def __init__(self):
         super().__init__(VMWriter())
-        self._symboltable = SymbolTable()
+        self._symboltable = None
 
     # ---------------------COMPILATION FUNCTIONS---------------------
     def _compile_class(self):
@@ -25,6 +25,7 @@ class VMCompilationEngine(CompilationEngine):
         Compiles code of the form:
             'class' className '{' classVarDec* subroutineDec* '}'
         """
+        self._symboltable = SymbolTable()
         self._assert_token("class")
         self._assert_identifier("class")
         self._assert_token("{")
@@ -44,6 +45,8 @@ class VMCompilationEngine(CompilationEngine):
         """
         while self._tokenizer.token in _CLASS_VAR_DEC_KEYWORDS:
             kind = self._get_assert()
+            if kind == "field":
+                kind = "this"
             type_ = self._get_assert(self._assert_type)
             self._define(type_, kind)
             while self._check_token(","):
@@ -93,9 +96,9 @@ class VMCompilationEngine(CompilationEngine):
         """
         while self._check_token("var"):
             type_ = self._get_assert(self._assert_type)
-            self._define(type_, "var")
+            self._define(type_, "local")
             while self._check_token(","):
-                self._define(type_, "var")
+                self._define(type_, "local")
             self._assert_token(";")
 
     def _compile_statements(self):
@@ -122,7 +125,7 @@ class VMCompilationEngine(CompilationEngine):
         Compile code of the form:
             'let' varName ('[' expression ']')? '=' expression ';'
         """
-        self._assert_identifier("var")
+        name = self._get_assert(self._assert_identifier)
         if self._check_token("["):
             self._compile_expression()
             self._assert_token("]")
@@ -195,11 +198,16 @@ class VMCompilationEngine(CompilationEngine):
         Compile code of the form:
             term (op term)*
         """
-        self._open_block("expression")
         self._compile_term()
-        while self._check_token(_OPS):
+        while self._check_token(_OPS, advance=False):
+            op = self._get_assert()
             self._compile_term()
-        self._close_block("expression")
+            if op == "*":
+                self._writer.call("Math.multiply", 2)
+            elif op == "/":
+                self._writer.call("Math.divide", 2)
+            else:
+                self._writer.arithmetic(_BIN_OP_MAP[op])
 
     def _compile_term(self):
         """
@@ -213,46 +221,68 @@ class VMCompilationEngine(CompilationEngine):
             - '(' expression ')'
             - unaryOp term
         """
-        self._open_block("term")
-        if (self._tokenizer.token_type == "integerConstant"
-                or self._tokenizer.token_type == "stringConstant"
-                or self._tokenizer.token in _KEYWORD_CONSTANTS):
-            self._write()
-        elif self._tokenizer.token_type == "identifier":
-            name = self._tokenizer.token
+        if self._tokenizer.token_type == "integerConstant":
+            self._writer.push("constant", self._tokenizer.token)
             self._tokenizer.advance()
-            if self._check_token(".", advance=False):
-                self._tokenizer.advance()
-                self._assert_identifier(advance=False)
-                name = ".".join([name, self._tokenizer.token])
-                self._write(token_type="subroutine", token=name)
+        elif self._tokenizer.token_type == "stringConstant":
+            string = self._get_assert()
+            self._writer.push("constant", len(string))
+            self._writer.call("String.new", 1)
+            for c in string:
+                self._writer.push("constant", ord(c))
+                self._writer.call("String.appendChar", 1)
+        elif self._check_token("true"):
+            self._writer.push("constant", 0)
+            self._writer.arithmetic("not")
+        elif self._check_token(_ZERO_CONSTANTS):
+            self._writer.push("constant", 0)
+        elif self._check_token("this"):
+            self._writer.push("pointer", 0)
+        elif self._tokenizer.token_type == "identifier":
+            name = self._get_assert()
+            if self._check_token("."):
+                subroutine = self._get_assert(self._assert_identifier)
+                name = ".".join([name, subroutine])
                 self._assert_token("(")
-                self._compile_expression_list()
+                n_args = self._compile_expression_list()
                 self._assert_token(")")
+                self._writer.call(name, n_args)
+            elif self._check_token("[", advance=False):
+                arr = self._get_var(name, prev=True)
+                self._tokenizer.advance()
+                self._writer.push(arr["kind"], arr["index"])
+                self._compile_expression()
+                self._writer.arithmetic("add")
+                self._writer.pop("pointer", 1)
+                self._writer.push("that", 0)
+                self._assert_token("]")
             else:
-                self._write(token_type="var", token=name, advance=False)
-                if self._check_token("["):
-                    self._compile_expression()
-                    self._assert_token("]")
+                var = self._get_var(name, prev=True)
+                self._writer.push(var["kind"], var["index"])
         elif self._check_token("("):
             self._compile_expression()
             self._assert_token(")")
-        elif self._check_token(_UNARY_OPS):
+        elif self._check_token("-"):
             self._compile_term()
-        self._close_block("term")
+            self._writer.arithmetic("neg")
+        elif self._check_token("~"):
+            self._compile_term()
+            self._writer.arithmetic("not")
 
     def _compile_expression_list(self):
         """
         Compile code of the form:
             (expression (',' expression)*)?
         """
-        self._open_block("expressionList")
+        n = 0
         if (self._tokenizer.token in _TYPE_TOKENS
                 or self._tokenizer.token_type in _TYPE_TYPES):
             self._compile_expression()
+            n += 1
             while self._check_token(","):
                 self._compile_expression()
-        self._close_block("expressionList")
+                n += 1
+        return n
 
     # -----------------------WRITING FUNCTIONS-----------------------
     def _write(self, stuff=".", advance=True, *args, **kwargs):
@@ -266,29 +296,33 @@ class VMCompilationEngine(CompilationEngine):
     def _close_block(self, block):
         pass
     # ----------------------ASSERTION FUNCTIONS----------------------
-    def _assert_token(self, token, advance=True):
-        super()._assert_token(token)
+    def _assert_token(self, token, advance=True, prev=False):
+        super()._assert_token(token, prev)
         if advance:
             self._tokenizer.advance()
 
-    def _assert_identifier(self, advance=True):
-        super()._assert_identifier()
+    def _assert_identifier(self, advance=True, prev=False):
+        super()._assert_identifier(prev)
         if advance:
             self._tokenizer.advance()
 
-    def _assert_type(self, advance=True):
-        super()._assert_type()
+    def _assert_type(self, advance=True, prev=False):
+        super()._assert_type(prev)
         if advance:
             self._tokenizer.advance()
 
-    def _assert_subroutine_type(self, advance=True):
-        super()._assert_subroutine_type()
+    def _assert_subroutine_type(self, advance=True, prev=False):
+        super()._assert_subroutine_type(prev)
         if advance:
             self._tokenizer.advance()
 
     # ----------------------CHECKING FUNCTIONS-----------------------
     def _check_token(self, token, advance=True):
-        if self._tokenizer.token in token:
+        if type(token) is str:
+            success = self._tokenizer.token == token
+        else:
+            success = self._tokenizer.token in token
+        if success:
             if advance:
                 self._tokenizer.advance()
             return True
@@ -299,13 +333,23 @@ class VMCompilationEngine(CompilationEngine):
         name = self._get_assert(self._assert_identifier)
         self._symboltable.define(name, type_, kind)
 
-    def _get_assert(self, assertion=None):
+    def _get_assert(self, assertion=None, prev=False):
         val = self._tokenizer.token
         if assertion is None:
             self._tokenizer.advance()
         else:
-            assertion()
+            assertion(prev=prev)
         return val
+
+    def _get_var(self, name, prev=False):
+        var = self._symboltable.get_var(name)
+        if var is None:
+            self._raise_error(
+                "Variable",
+                f"Variable '{name}' has not been declared.",
+                prev
+            )
+        return var
 
 
 _CLASS_VAR_DEC_KEYWORDS = frozenset(("static", "field"))
@@ -313,7 +357,17 @@ _SUBROUTINE_DEC_KEYWORDS = frozenset(("constructor", "function", "method"))
 _TYPE_KEYWORDS = frozenset(("int", "char", "boolean"))
 _SUBROUTINE_TYPE_KEYWORDS = frozenset(("void", "int", "char", "boolean"))
 _KEYWORD_CONSTANTS = frozenset(("true", "false", "null", "this"))
+_ZERO_CONSTANTS = frozenset(("false", "null"))
 _UNARY_OPS = frozenset("-~")
 _OPS = frozenset("+-*/&|<>=")
+_BIN_OP_MAP = {
+    "+": "add",
+    "-": "sub",
+    "&": "and",
+    "|": "or",
+    "<": "lt",
+    ">": "gt",
+    "=": "eq"
+}
 _TYPE_TOKENS = frozenset("(") | _UNARY_OPS | _KEYWORD_CONSTANTS
 _TYPE_TYPES = frozenset(("integerConstant", "stringConstant", "identifier"))

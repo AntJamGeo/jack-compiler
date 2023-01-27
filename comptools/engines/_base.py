@@ -45,22 +45,24 @@ class CompilationEngine:
         raise NotImplementedError("Engine requires a _compile_class method.")
 
     # ----------------------ASSERTION FUNCTIONS----------------------
-    def _assert_has_more_tokens(self):
+    def _assert_has_more_tokens(self, prev=False):
         if not self._tokenizer.has_more_tokens:
             self._raise_error(
                 "Unexpected End of File",
-                "Program seems unfinished. Have you missed something?"
+                "Program seems unfinished. Have you missed something?",
+                prev
             )
 
-    def _assert_token(self, token):
+    def _assert_token(self, token, prev=False):
         self._assert_has_more_tokens()
         if self._tokenizer.token != token:
             self._raise_error(
                 "Token",
-                f"Expected token '{token}' but got '{self._tokenizer.token}'."
+                f"Expected '{token}' but got '{self._tokenizer.token}'.",
+                prev
             )
 
-    def _assert_identifier(self):
+    def _assert_identifier(self, prev=False):
         self._assert_has_more_tokens()
         if self._tokenizer.token_type != "identifier":
             self._raise_error(
@@ -68,19 +70,21 @@ class CompilationEngine:
                 (
                     "Expected an identifier but got a "
                     f"{self._tokenizer.token_type}."
-                )
+                ),
+                prev
             )
 
-    def _assert_type(self):
+    def _assert_type(self, prev=False):
         self._assert_has_more_tokens()
         if (self._tokenizer.token not in _TYPE_KEYWORDS
                 and self._tokenizer.token_type != "identifier"):
             self._raise_error(
                 "Syntax",
-                "Expected a type keyword (int/char/boolean) or class name."
+                "Expected a type keyword (int/char/boolean) or class name.",
+                prev
             )
 
-    def _assert_subroutine_type(self):
+    def _assert_subroutine_type(self, prev=False):
         self._assert_has_more_tokens()
         if (self._tokenizer.token not in _SUBROUTINE_TYPE_KEYWORDS
                 and self._tokenizer.token_type != "identifier"):
@@ -89,16 +93,25 @@ class CompilationEngine:
                 (
                     "Expected a return type (void/int/char/boolean/"
                     f"<class name>) but got '{self._tokenizer.token}'."
-                )
+                ),
+                prev
             )
 
     # ------------------------ERROR FUNCTION-------------------------
-    def _raise_error(self, type_="Syntax", info=None):
+    def _raise_error(self, type_="Syntax", info=None, prev=False):
+        if prev:
+            line_no = self._tokenizer.prev_start_line_no
+            line = self._tokenizer.prev_start_line
+            char_no = self._tokenizer.prev_start_char_no
+        else:
+            line_no = self._tokenizer.start_line_no
+            line = self._tokenizer.start_line
+            char_no = self._tokenizer.start_char_no
         raise JackError(
                 self._class_name,
-                self._tokenizer.start_line_no,
-                self._tokenizer.start_line,
-                self._tokenizer.start_char_no,
+                line_no,
+                line,
+                char_no,
                 type_,
                 info
                 )

@@ -182,17 +182,15 @@ class VMCompilationEngine(CompilationEngine):
         # subroutineCall of form:
             # ((className | varName) '.')?
             # subroutineName '(' expressionList ')'
-        self._assert_identifier(advance=False)
-        subroutine = self._tokenizer.token
-        self._tokenizer.advance()
-        if self._check_token(".", advance=False):
-            self._tokenizer.advance()
-            self._assert_identifier(advance=False)
-            subroutine = ".".join([subroutine, self._tokenizer.token])
-            self._tokenizer.advance()
+        name = self._get_assert(self._assert_identifier)
+        if self._check_token("."):
+            subroutine = self._get_assert(self._assert_identifier)
+            name = ".".join([name, subroutine])
         self._assert_token("(")
-        self._compile_expression_list()
+        n_args = self._compile_expression_list()
         self._assert_token(")")
+        self._writer.call(name, n_args)
+        self._writer.pop("temp", 0)
         self._assert_token(";")
 
     def _compile_return(self):

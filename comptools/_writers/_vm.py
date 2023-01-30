@@ -18,7 +18,7 @@ class VMWriter(Writer):
         self._file.write(f"{command}\n")
 
     def label(self, label):
-        self._file.write(f"({label})\n")
+        self._file.write(f"label {label}\n")
 
     def goto(self, label):
         self._file.write(f"goto {label}\n")

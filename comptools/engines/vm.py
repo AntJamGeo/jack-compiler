@@ -19,6 +19,7 @@ class VMCompilationEngine(CompilationEngine):
         super().__init__(VMWriter())
         self._symboltable = None
         self._branch_count = 0
+        self._class_name = None
 
     # ---------------------COMPILATION FUNCTIONS---------------------
     def _compile_class(self):
@@ -28,7 +29,7 @@ class VMCompilationEngine(CompilationEngine):
         """
         self._symboltable = SymbolTable()
         self._assert_token("class")
-        self._assert_identifier("class")
+        self._class_name = self._get_assert(self._assert_identifier)
         self._assert_token("{")
         self._compile_class_var_dec()
         self._compile_subroutine()
@@ -62,10 +63,12 @@ class VMCompilationEngine(CompilationEngine):
         """
         while self._tokenizer.token in _SUBROUTINE_DEC_KEYWORDS:
             self._symboltable.start_subroutine()
-            subroutine_category = self._tokenizer.token
-            self._tokenizer.advance()
-            self._assert_subroutine_type()
-            self._assert_identifier(subroutine_category)
+            kind = self._get_assert()
+            type_ = self._get_assert(self._assert_subroutine_type)
+            name = self._get_assert(self._assert_identifier)
+            name = ".".join([self._class_name, name])
+            if kind == "method":
+                self._define(self._class_name, "argument", "this")
             self._assert_token("(")
             self._compile_parameter_list()
             self._assert_token(")")
@@ -73,6 +76,16 @@ class VMCompilationEngine(CompilationEngine):
                 # '{' varDec* statements '}'
             self._assert_token("{")
             self._compile_var_dec()
+            self._writer.function(
+                name, self._symboltable.var_count["local"])
+            if kind == "constructor":
+                self._writer.push(
+                    "constant", self._symboltable.var_count["this"])
+                self._writer.call("Memory.alloc", 1)
+                self._writer.pop("pointer", 0)
+            elif kind == "method":
+                self._writer.push("argument", 0)
+                self._writer.pop("pointer", 0)
             self._compile_statements()
             self._assert_token("}")
 
@@ -200,13 +213,7 @@ class VMCompilationEngine(CompilationEngine):
             # ((className | varName) '.')?
             # subroutineName '(' expressionList ')'
         name = self._get_assert(self._assert_identifier)
-        if self._check_token("."):
-            subroutine = self._get_assert(self._assert_identifier)
-            name = ".".join([name, subroutine])
-        self._assert_token("(")
-        n_args = self._compile_expression_list()
-        self._assert_token(")")
-        self._writer.call(name, n_args)
+        self._compile_subroutine_call(name, assertion=True)
         self._writer.pop("temp", 0)
         self._assert_token(";")
 
@@ -260,7 +267,7 @@ class VMCompilationEngine(CompilationEngine):
             self._writer.call("String.new", 1)
             for c in string:
                 self._writer.push("constant", ord(c))
-                self._writer.call("String.appendChar", 1)
+                self._writer.call("String.appendChar", 2)
         elif self._check_token("true"):
             self._writer.push("constant", 0)
             self._writer.arithmetic("not")
@@ -270,13 +277,8 @@ class VMCompilationEngine(CompilationEngine):
             self._writer.push("pointer", 0)
         elif self._tokenizer.token_type == "identifier":
             name = self._get_assert()
-            if self._check_token("."):
-                subroutine = self._get_assert(self._assert_identifier)
-                name = ".".join([name, subroutine])
-                self._assert_token("(")
-                n_args = self._compile_expression_list()
-                self._assert_token(")")
-                self._writer.call(name, n_args)
+            if self._compile_subroutine_call(name, assertion=False):
+                return
             elif self._check_token("[", advance=False):
                 arr = self._get_var(name, prev=True)
                 self._tokenizer.advance()
@@ -314,6 +316,41 @@ class VMCompilationEngine(CompilationEngine):
                 n += 1
         return n
 
+    def _compile_subroutine_call(self, name, assertion):
+        n_args = 0
+        local_method = True
+        # If there is a '.', we have a class subroutine or a method
+        # applied to a variable. Otherwise, we have a local
+        # method call.
+        if self._check_token("."):
+            subroutine = self._get_assert(self._assert_identifier)
+            var = self._symboltable.get_var(name)
+            # className.subroutine
+            if var is None:
+                name = ".".join([name, subroutine])
+            # varName.method
+            else:
+                name = ".".join([var["type"], subroutine])
+                self._writer.push(var["kind"], var["index"])
+                n_args = 1
+            local_method = False
+        if self._check_token("(", advance=False):
+            if local_method:
+                name = ".".join([self._class_name, name])
+                self._writer.push("pointer", 0)
+                n_args = 1
+            self._tokenizer.advance()
+            n_args += self._compile_expression_list()
+            self._assert_token(")")
+            self._writer.call(name, n_args)
+            return True
+        elif assertion:
+            self._raise_error(
+                "Subroutine Error",
+                "Expected subroutine call"
+            )
+        return False
+
     # ----------------------ASSERTION FUNCTIONS----------------------
     def _assert_token(self, token, advance=True, prev=False):
         super()._assert_token(token, prev)
@@ -348,8 +385,9 @@ class VMCompilationEngine(CompilationEngine):
         return False
 
     # ------------------------OTHER FUNCTIONS------------------------
-    def _define(self, type_, kind):
-        name = self._get_assert(self._assert_identifier)
+    def _define(self, type_, kind, name=None):
+        if name is None:
+            name = self._get_assert(self._assert_identifier)
         self._symboltable.define(name, type_, kind)
 
     def _get_assert(self, assertion=None, prev=False):

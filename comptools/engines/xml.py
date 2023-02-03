@@ -2,6 +2,7 @@ import os
 
 from comptools.engines._base import CompilationEngine
 from comptools._writers import XMLWriter
+from comptools._symboltable import SymbolTable
 
 
 class XMLCompilationEngine(CompilationEngine):
@@ -15,6 +16,7 @@ class XMLCompilationEngine(CompilationEngine):
     """
     def __init__(self):
         super().__init__(XMLWriter())
+        self._symboltable = None
 
     # ---------------------COMPILATION FUNCTIONS---------------------
     def _compile_class(self):
@@ -22,6 +24,7 @@ class XMLCompilationEngine(CompilationEngine):
         Compiles code of the form:
             'class' className '{' classVarDec* subroutineDec* '}'
         """
+        self._symboltable = SymbolTable()
         self._open_block("class")
         self._write_token("class")
         self._write_identifier("class")
@@ -42,13 +45,16 @@ class XMLCompilationEngine(CompilationEngine):
             ('static' | 'field') type varName (',' varName)* ';'
         """
         while self._tokenizer.token in _CLASS_VAR_DEC_KEYWORDS:
-            var_category = self._tokenizer.token
+            kind = self._tokenizer.token
+            if kind == "field":
+                kind = "this"
             self._open_block("classVarDec")
             self._write()
+            type_ = self._tokenizer.token
             self._write_type()
-            self._write_identifier(var_category)
+            self._write_var(type_, kind)
             while self._check_token(","):
-                self._write_identifier(var_category)
+                self._write_var(type_, kind)
             self._write_token(";")
             self._close_block("classVarDec")
 
@@ -86,11 +92,13 @@ class XMLCompilationEngine(CompilationEngine):
         self._open_block("parameterList")
         if (self._tokenizer.token in _TYPE_KEYWORDS
                 or self._tokenizer.token_type == "identifier"):
+            type_ = self._tokenizer.token
             self._write()
-            self._write_identifier("argument")
+            self._write_var(type_, "argument")
             while self._check_token(","):
+                type_ = self._tokenizer.token
                 self._write_type()
-                self._write_identifier("argument")
+                self._write_var(type_, "argument")
         self._close_block("parameterList")
 
     def _compile_var_dec(self):
@@ -102,10 +110,11 @@ class XMLCompilationEngine(CompilationEngine):
         while self._tokenizer.token == "var":
             self._open_block("varDec")
             self._write()
+            type_ = self._tokenizer.token
             self._write_type()
-            self._write_identifier("var")
+            self._write_var(type_, "local")
             while self._check_token(","):
-                self._write_identifier("var")
+                self._write_var(type_, "local")
             self._write_token(";")
             self._close_block("varDec")
 
@@ -137,7 +146,7 @@ class XMLCompilationEngine(CompilationEngine):
         """
         self._open_block("letStatement")
         self._write()
-        self._write_identifier("var")
+        self._write_var(define=False)
         if self._check_token("["):
             self._compile_expression()
             self._write_token("]")
@@ -192,21 +201,9 @@ class XMLCompilationEngine(CompilationEngine):
             # ((className | varName) '.')?
             # subroutineName '(' expressionList ')'
         self._assert_identifier()
-        identifier = self._tokenizer.token
+        name = self._tokenizer.token
         self._tokenizer.advance()
-        if self._check_token(".", write=False):
-            self._write(token_type="var", token=identifier, advance=False)
-            self._write()
-            self._write_identifier(category="subroutine")
-        else:
-            self._write(
-                token_type="subroutine",
-                token=identifier,
-                advance=False
-            )
-        self._write_token("(")
-        self._compile_expression_list()
-        self._write_token(")")
+        self._compile_subroutine_call(name, True)
         self._write_token(";")
         self._close_block("doStatement")
 
@@ -251,15 +248,18 @@ class XMLCompilationEngine(CompilationEngine):
                 or self._tokenizer.token in _KEYWORD_CONSTANTS):
             self._write()
         elif self._tokenizer.token_type == "identifier":
-            self._write_identifier(category="var")
-            if self._check_token("."):
-                self._write_identifier(category="subroutine")
-                self._write_token("(")
-                self._compile_expression_list()
-                self._write_token(")")
+            self._assert_identifier()
+            name = self._tokenizer.token
+            self._tokenizer.advance()
+            if self._compile_subroutine_call(name, assertion=False):
+                pass
             elif self._check_token("["):
                 self._compile_expression()
                 self._write_token("]")
+            else:
+                var = self._get_var(name, prev=True)
+                self._write(
+                    f"{var['kind']}.{var['type']}.{var['index']}", name, False)
         elif self._check_token("("):
             self._compile_expression()
             self._write_token(")")
@@ -279,6 +279,35 @@ class XMLCompilationEngine(CompilationEngine):
             while self._check_token(","):
                 self._compile_expression()
         self._close_block("expressionList")
+
+    def _compile_subroutine_call(self, name, assertion):
+        local_method = True
+        if self._check_token(".", write=False):
+            self._tokenizer.advance()
+            self._assert_identifier()
+            subroutine = self._tokenizer.token
+            var = self._symboltable.get_var(name)
+            if var is None:
+                self._write("class", name, False)
+            else:
+                self._write(
+                    f"{var['kind']}.{var['type']}.{var['index']}", name, False)
+            self._write("symbol", ".", False)
+            self._write("subroutine", subroutine, True)
+            local_method = False
+        if self._check_token("(", write=False):
+            if local_method:
+                self._write("subroutine", name, False)
+            self._write_token("(")
+            self._compile_expression_list()
+            self._write_token(")")
+            return True
+        elif assertion:
+            self._raise_error(
+                "Subroutine Error",
+                "Expected subroutine call"
+            )
+        return False
 
     # -----------------------WRITING FUNCTIONS-----------------------
     def _write(self, token_type=None, token=None, advance=True):
@@ -306,6 +335,12 @@ class XMLCompilationEngine(CompilationEngine):
         super()._assert_subroutine_type()
         self._write()
 
+    def _write_var(self, type_=None, kind=None, define=True):
+        if define:
+            self._define(type_, kind)
+        var = self._get_var(self._tokenizer.token)
+        self._write_identifier(f"{var['kind']}.{var['type']}.{var['index']}")
+
     def _open_block(self, block):
         self._writer.open_block(block)
 
@@ -320,6 +355,21 @@ class XMLCompilationEngine(CompilationEngine):
             return True
         return False
 
+    # ------------------------OTHER FUNCTIONS------------------------
+    def _define(self, type_, kind, name=None):
+        if name is None:
+            name = self._tokenizer.token
+        self._symboltable.define(name, type_, kind)
+
+    def _get_var(self, name, prev=False):
+        var = self._symboltable.get_var(name)
+        if var is None:
+            self._raise_error(
+                "Variable",
+                f"Variable '{name}' has not been declared.",
+                prev
+            )
+        return var
 
 _CLASS_VAR_DEC_KEYWORDS = frozenset(("static", "field"))
 _SUBROUTINE_DEC_KEYWORDS = frozenset(("constructor", "function", "method"))

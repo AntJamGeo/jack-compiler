@@ -27,17 +27,13 @@ class XMLCompilationEngine(CompilationEngine):
         self._symboltable = SymbolTable()
         self._open_block("class")
         self._write_token("class")
+        self._assert_class_name_match()
         self._write_identifier("class")
         self._write_token("{")
         self._compile_class_var_dec()
         self._compile_subroutine()
         self._write_token("}")
         self._close_block("class")
-        if self._tokenizer.has_more_tokens:
-            self._raise_error(
-                "Class",
-                "All code should be within a single class block."
-            )
 
     def _compile_class_var_dec(self):
         """
@@ -197,9 +193,6 @@ class XMLCompilationEngine(CompilationEngine):
         """
         self._open_block("doStatement")
         self._write()
-        # subroutineCall of form:
-            # ((className | varName) '.')?
-            # subroutineName '(' expressionList ')'
         self._assert_identifier()
         name = self._tokenizer.token
         self._tokenizer.advance()
@@ -281,6 +274,11 @@ class XMLCompilationEngine(CompilationEngine):
         self._close_block("expressionList")
 
     def _compile_subroutine_call(self, name, assertion):
+        """
+        Compilie code of the form
+            ((className | varName) '.')?
+            subroutineName '(' expressionList ')'
+        """
         local_method = True
         if self._check_token(".", write=False):
             self._tokenizer.advance()
@@ -303,10 +301,7 @@ class XMLCompilationEngine(CompilationEngine):
             self._write_token(")")
             return True
         elif assertion:
-            self._raise_error(
-                "Subroutine Error",
-                "Expected subroutine call"
-            )
+            self._raise_subroutine_call_error()
         return False
 
     # -----------------------WRITING FUNCTIONS-----------------------
@@ -361,15 +356,6 @@ class XMLCompilationEngine(CompilationEngine):
             name = self._tokenizer.token
         self._symboltable.define(name, type_, kind)
 
-    def _get_var(self, name, prev=False):
-        var = self._symboltable.get_var(name)
-        if var is None:
-            self._raise_error(
-                "Variable",
-                f"Variable '{name}' has not been declared.",
-                prev
-            )
-        return var
 
 _CLASS_VAR_DEC_KEYWORDS = frozenset(("static", "field"))
 _SUBROUTINE_DEC_KEYWORDS = frozenset(("constructor", "function", "method"))

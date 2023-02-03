@@ -6,15 +6,11 @@ class JackError(Exception):
             line,
             error_index,
             type_="Syntax",
-            info=None):
+            info="invalid syntax"):
         error_loc = " " * error_index + "^"
-        if info is None:
-            info = ""
-        else:
-            info = " " + info
         self.message = (
                 "Error found:\n"
-                f"  Class \"{class_}\", line {line_no}\n"
+                f"  Class '{class_}', line {line_no}\n"
                 f"    {line}\n"
                 f"    {error_loc}\n"
-                f"{type_} Error.{info}\n")
+                f"{type_}Error: {info}\n")

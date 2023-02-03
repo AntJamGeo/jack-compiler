@@ -26,17 +26,18 @@ if os.path.isdir(path):
         if os.path.isfile(entry.name) and ext == ".jack":
             files.append(class_name)
     # compile each .jack file
-    for class_name in files:
+    for i, class_name in enumerate(files):
         success = compilation_engine.run(class_name)
         if not success:
             error_code = 1
             quit = ""
-            while quit != "y":
-                quit = input("Continue compiling directory? (y/n)\n")
-                if quit == "n":
-                    sys.exit(1)
-                elif quit != "y":
-                    print("Invalid response.")
+            if i < len(files)-1:
+                while quit != "y":
+                    quit = input("Continue compiling directory? (y/n)\n")
+                    if quit == "n":
+                        sys.exit(1)
+                    elif quit != "y":
+                        print("Invalid response.")
     sys.exit(error_code)
 # compile an individual .jack file
 elif os.path.isfile(path) and ext == ".jack":

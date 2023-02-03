@@ -19,7 +19,6 @@ class VMCompilationEngine(CompilationEngine):
         super().__init__(VMWriter())
         self._symboltable = None
         self._branch_count = 0
-        self._class_name = None
 
     # ---------------------COMPILATION FUNCTIONS---------------------
     def _compile_class(self):
@@ -29,16 +28,12 @@ class VMCompilationEngine(CompilationEngine):
         """
         self._symboltable = SymbolTable()
         self._assert_token("class")
-        self._class_name = self._get_assert(self._assert_identifier)
+        self._assert_class_name_match()
+        self._assert_identifier()
         self._assert_token("{")
         self._compile_class_var_dec()
         self._compile_subroutine()
         self._assert_token("}")
-        if self._tokenizer.has_more_tokens:
-            self._raise_error(
-                "Class",
-                "All code should be within a single class block."
-            )
 
     def _compile_class_var_dec(self):
         """
@@ -209,9 +204,6 @@ class VMCompilationEngine(CompilationEngine):
         Compile code of the form:
             'do' subroutineCall ';'
         """
-        # subroutineCall of form:
-            # ((className | varName) '.')?
-            # subroutineName '(' expressionList ')'
         name = self._get_assert(self._assert_identifier)
         self._compile_subroutine_call(name, assertion=True)
         self._writer.pop("temp", 0)
@@ -317,6 +309,11 @@ class VMCompilationEngine(CompilationEngine):
         return n
 
     def _compile_subroutine_call(self, name, assertion):
+        """
+        Compilie code of the form
+            ((className | varName) '.')?
+            subroutineName '(' expressionList ')'
+        """
         n_args = 0
         local_method = True
         # If there is a '.', we have a class subroutine or a method
@@ -345,10 +342,7 @@ class VMCompilationEngine(CompilationEngine):
             self._writer.call(name, n_args)
             return True
         elif assertion:
-            self._raise_error(
-                "Subroutine Error",
-                "Expected subroutine call"
-            )
+            self._raise_subroutine_call_error()
         return False
 
     # ----------------------ASSERTION FUNCTIONS----------------------
@@ -397,16 +391,6 @@ class VMCompilationEngine(CompilationEngine):
         else:
             assertion(prev=prev)
         return val
-
-    def _get_var(self, name, prev=False):
-        var = self._symboltable.get_var(name)
-        if var is None:
-            self._raise_error(
-                "Variable",
-                f"Variable '{name}' has not been declared.",
-                prev
-            )
-        return var
 
 
 _CLASS_VAR_DEC_KEYWORDS = frozenset(("static", "field"))

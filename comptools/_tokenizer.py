@@ -77,15 +77,15 @@ class JackTokenizer:
                 if first in _SPACE:
                     self._char_no += 1
                     continue
-                elif first in _SLASH:
-                    if self._is_comment():
-                        continue
                 self._prev_start_line = self._start_line
                 self._prev_start_line_no = self._start_line_no
                 self._prev_start_char_no = self._start_char_no
                 self._start_line = self._line
                 self._start_line_no = self._line_no
                 self._start_char_no = self._char_no
+                if first in _SLASH:
+                    if self._is_comment():
+                        continue
                 if first in _START_WORD_CHARS:
                     self._build_token(_WORD_CHARS)
                     self._token_type = (
@@ -102,12 +102,12 @@ class JackTokenizer:
                     self._char_no += 1
                     end_of_string = self._line.find("\"", self._char_no)
                     if end_of_string == -1:
-                        self._raise_error("Unclosed String")
+                        self._raise_error("EndOfFile", "unclosed string")
                     self._token = self._line[self._char_no:end_of_string]
                     self._token_type = "stringConstant"
                     self._char_no = end_of_string + 1
                 else:
-                    self._raise_error("Unidentified Character")
+                    self._raise_error("Syntax", "unidentified character")
                 return
 
     def _build_token(self, valid_chars):
@@ -134,7 +134,7 @@ class JackTokenizer:
                     self._char_no = end_of_comment_index + 2
                     break
             else:
-                self._raise_error("Unclosed Multiline Comment")
+                self._raise_error("EndOfFile", "unclosed multiline comment")
         else:
             return False
         return True
@@ -150,13 +150,13 @@ class JackTokenizer:
             self._token = None
             self._token_type = None
 
-    def _raise_error(self, type_="Syntax", info=None):
+    def _raise_error(self, err, info):
         raise JackError(
                 self._class_name,
                 self._start_line_no,
                 self._start_line,
                 self._start_char_no,
-                type_,
+                err,
                 info
                 )
 

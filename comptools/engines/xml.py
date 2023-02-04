@@ -2,7 +2,6 @@ import os
 
 from comptools.engines._base import CompilationEngine
 from comptools._writers import XMLWriter
-from comptools._symboltable import SymbolTable
 
 
 class XMLCompilationEngine(CompilationEngine):
@@ -24,35 +23,18 @@ class XMLCompilationEngine(CompilationEngine):
         Compiles code of the form:
             'class' className '{' classVarDec* subroutineDec* '}'
         """
-        self._symboltable = SymbolTable()
         self._open_block("class")
-        self._write_token("class")
-        self._assert_class_name_match()
-        self._write_identifier("class")
-        self._write_token("{")
-        self._compile_class_var_dec()
-        self._compile_subroutine()
-        self._write_token("}")
+        super()._compile_class()
         self._close_block("class")
 
     def _compile_class_var_dec(self):
         """
         Compiles code of the form:
-            ('static' | 'field') type varName (',' varName)* ';'
+            (('static' | 'field') type varName (',' varName)* ';')*
         """
-        while self._tokenizer.token in _CLASS_VAR_DEC_KEYWORDS:
-            kind = self._tokenizer.token
-            if kind == "field":
-                kind = "this"
-            self._open_block("classVarDec")
-            self._write()
-            type_ = self._tokenizer.token
-            self._write_type()
-            self._write_var(type_, kind)
-            while self._check_token(","):
-                self._write_var(type_, kind)
-            self._write_token(";")
-            self._close_block("classVarDec")
+        self._open_block("classVarDec")
+        super()._compile_class_var_dec()
+        self._close_block("classVarDec")
 
     def _compile_subroutine(self):
         """
@@ -60,41 +42,34 @@ class XMLCompilationEngine(CompilationEngine):
             ('constructor' | 'function' | 'method') ('void' | type)
             subroutineName '(' parameterList ')' subroutineBody
         """
-        while self._tokenizer.token in _SUBROUTINE_DEC_KEYWORDS:
-            subroutine_category = self._tokenizer.token
-            self._open_block("subroutineDec")
-            self._write()
-            self._write_subroutine_type()
-            self._write_identifier(subroutine_category)
-            self._write_token("(")
-            self._compile_parameter_list()
-            self._write_token(")")
-            # subroutineBody of form:
-                # '{' varDec* statements '}'
-            self._open_block("subroutineBody")
-            self._write_token("{")
+        self._open_block("subroutineDec")
+        self._symboltable.start_subroutine()
+        kind = self._absorb()
+        self._absorb(":subroutine_type")
+        self._absorb(":identifier", tag="subroutineName")
+        if kind == "method":
+            self._symboltable.define("this", self._class_name, "argument")
+        self._absorb("(")
+        self._compile_parameter_list()
+        self._absorb(")")
+        # subroutineBody of form:
+            # '{' varDec* statements '}'
+        self._open_block("subroutineBody")
+        self._absorb("{")
+        while self._tokenizer.token == "var":
             self._compile_var_dec()
-            self._compile_statements()
-            self._write_token("}")
-            self._close_block("subroutineBody")
-            self._close_block("subroutineDec")
+        self._compile_statements()
+        self._absorb("}")
+        self._close_block("subroutineBody")
+        self._close_block("subroutineDec")
 
     def _compile_parameter_list(self):
         """
         Compiles code of the form:
             ( (type varName) (',' type varName)*)?
         """
-
         self._open_block("parameterList")
-        if (self._tokenizer.token in _TYPE_KEYWORDS
-                or self._tokenizer.token_type == "identifier"):
-            type_ = self._tokenizer.token
-            self._write()
-            self._write_var(type_, "argument")
-            while self._check_token(","):
-                type_ = self._tokenizer.token
-                self._write_type()
-                self._write_var(type_, "argument")
+        super()._compile_parameter_list()
         self._close_block("parameterList")
 
     def _compile_var_dec(self):
@@ -102,17 +77,9 @@ class XMLCompilationEngine(CompilationEngine):
         Compiles code of the form:
             'var' type varName (',' varName)* ';'
         """
-
-        while self._tokenizer.token == "var":
-            self._open_block("varDec")
-            self._write()
-            type_ = self._tokenizer.token
-            self._write_type()
-            self._write_var(type_, "local")
-            while self._check_token(","):
-                self._write_var(type_, "local")
-            self._write_token(";")
-            self._close_block("varDec")
+        self._open_block("varDec")
+        super()._compile_var_dec()
+        self._close_block("varDec")
 
     def _compile_statements(self):
         """
@@ -120,20 +87,8 @@ class XMLCompilationEngine(CompilationEngine):
         keywords: 'let', 'if', 'while', 'do', or 'return'.
         """
         self._open_block("statements")
-        while True:
-            if self._tokenizer.token == "let":
-                self._compile_let()
-            elif self._tokenizer.token == "if":
-                self._compile_if()
-            elif self._tokenizer.token == "while":
-                self._compile_while()
-            elif self._tokenizer.token == "do":
-                self._compile_do()
-            elif self._tokenizer.token == "return":
-                self._compile_return()
-            else:
-                self._close_block("statements")
-                return
+        super()._compile_statements()
+        self._close_block("statements")
 
     def _compile_let(self):
         """
@@ -141,14 +96,25 @@ class XMLCompilationEngine(CompilationEngine):
             'let' varName ('[' expression ']')? '=' expression ';'
         """
         self._open_block("letStatement")
-        self._write()
-        self._write_var(define=False)
-        if self._check_token("["):
+        self._absorb("let")
+
+        # save the current state so that if there is an error, the
+        # error message will accurately show where the error is
+        state = self._tokenizer.state
+        var = self._symboltable.get_var(self._tokenizer.token)
+        if var is None:
+            self._raise_var_error()
+        var_tag = generate_var_tag(var)
+        self._absorb(":identifier", tag=var_tag)
+        if self._tokenizer.token == "[":
+            if var["type"] != "Array":
+                self._raise_array_error(state)
+            self._absorb()
             self._compile_expression()
-            self._write_token("]")
-        self._write_token("=")
+            self._absorb("]")
+        self._absorb("=")
         self._compile_expression()
-        self._write_token(";")
+        self._absorb(";")
         self._close_block("letStatement")
 
     def _compile_if(self):
@@ -158,17 +124,18 @@ class XMLCompilationEngine(CompilationEngine):
             ('else' '{' statements '}')?
         """
         self._open_block("ifStatement")
-        self._write()
-        self._write_token("(")
+        self._absorb("if")
+        self._absorb("(")
         self._compile_expression()
-        self._write_token(")")
-        self._write_token("{")
+        self._absorb(")")
+        self._absorb("{")
         self._compile_statements()
-        self._write_token("}")
-        if self._check_token("else"):
-            self._write_token("{")
+        self._absorb("}")
+        if self._tokenizer.token == "else":
+            self._absorb()
+            self._absorb("{")
             self._compile_statements()
-            self._write_token("}")
+            self._absorb("}")
         self._close_block("ifStatement")
 
     def _compile_while(self):
@@ -177,13 +144,13 @@ class XMLCompilationEngine(CompilationEngine):
             'while' '(' expression ')' '{' statements '}'
         """
         self._open_block("whileStatement")
-        self._write()
-        self._write_token("(")
+        self._absorb("while")
+        self._absorb("(")
         self._compile_expression()
-        self._write_token(")")
-        self._write_token("{")
+        self._absorb(")")
+        self._absorb("{")
         self._compile_statements()
-        self._write_token("}")
+        self._absorb("}")
         self._close_block("whileStatement")
 
     def _compile_do(self):
@@ -192,12 +159,16 @@ class XMLCompilationEngine(CompilationEngine):
             'do' subroutineCall ';'
         """
         self._open_block("doStatement")
-        self._write()
-        self._assert_identifier()
-        name = self._tokenizer.token
-        self._tokenizer.advance()
-        self._compile_subroutine_call(name, True)
-        self._write_token(";")
+        self._absorb("do")
+
+        # save the current state so that if there is an error, the
+        # error message will accurately show where the error is
+        state = self._tokenizer.state
+        super()._absorb(":identifier")
+        if not self._compile_subroutine_call(state.token):
+            raise self._raise_subroutine_error(state)
+
+        self._absorb(";")
         self._close_block("doStatement")
 
     def _compile_return(self):
@@ -206,10 +177,10 @@ class XMLCompilationEngine(CompilationEngine):
             'return' expression? ';'
         """
         self._open_block("returnStatement")
-        self._write()
+        self._absorb("return")
         if self._tokenizer.token != ";":
             self._compile_expression()
-        self._write_token(";")
+        self._absorb(";")
         self._close_block("returnStatement")
 
     def _compile_expression(self):
@@ -219,7 +190,8 @@ class XMLCompilationEngine(CompilationEngine):
         """
         self._open_block("expression")
         self._compile_term()
-        while self._check_token(_OPS):
+        while self._is_binary_op():
+            self._absorb()
             self._compile_term()
         self._close_block("expression")
 
@@ -238,25 +210,34 @@ class XMLCompilationEngine(CompilationEngine):
         self._open_block("term")
         if (self._tokenizer.token_type == "integerConstant"
                 or self._tokenizer.token_type == "stringConstant"
-                or self._tokenizer.token in _KEYWORD_CONSTANTS):
-            self._write()
+                or self._is_keyword_constant()):
+            self._absorb()
         elif self._tokenizer.token_type == "identifier":
-            self._assert_identifier()
-            name = self._tokenizer.token
-            self._tokenizer.advance()
-            if self._compile_subroutine_call(name, assertion=False):
-                pass
-            elif self._check_token("["):
-                self._compile_expression()
-                self._write_token("]")
-            else:
-                var = self._get_var(name, prev=True)
-                self._write(
-                    f"{var['kind']}.{var['type']}.{var['index']}", name, False)
-        elif self._check_token("("):
+            # save the current state so that if there is an error, the
+            # error message will accurately show where the error is
+            state = self._tokenizer.state
+            super()._absorb(":identifier")
+            if not self._compile_subroutine_call(state.token):
+                # if not a subroutine call, we have a variable
+                var = self._symboltable.get_var(state.token)
+                if var is None:
+                    self._raise_var_error(state)
+                var_tag = generate_var_tag(var)
+                self._write(tag=var_tag, token=state.token)
+                # if we have an open square bracket afterwards, this
+                # is an array
+                if self._tokenizer.token == "[":
+                    if var["type"] != "Array":
+                        self._raise_array_error(state)
+                    self._absorb()
+                    self._compile_expression()
+                    self._absorb("]")
+        elif self._tokenizer.token == "(":
+            self._absorb()
             self._compile_expression()
-            self._write_token(")")
-        elif self._check_token(_UNARY_OPS):
+            self._absorb(")")
+        elif self._is_unary_op():
+            self._absorb()
             self._compile_term()
         self._close_block("term")
 
@@ -266,75 +247,71 @@ class XMLCompilationEngine(CompilationEngine):
             (expression (',' expression)*)?
         """
         self._open_block("expressionList")
-        if (self._tokenizer.token in _TYPE_TOKENS
-                or self._tokenizer.token_type in _TYPE_TYPES):
+        if self._is_term():
             self._compile_expression()
-            while self._check_token(","):
+            while self._tokenizer.token == ",":
+                self._absorb()
                 self._compile_expression()
         self._close_block("expressionList")
 
-    def _compile_subroutine_call(self, name, assertion):
+    def _compile_subroutine_call(self, name):
         """
         Compilie code of the form
             ((className | varName) '.')?
             subroutineName '(' expressionList ')'
         """
         local_method = True
-        if self._check_token(".", write=False):
-            self._tokenizer.advance()
-            self._assert_identifier()
-            subroutine = self._tokenizer.token
+        # If there is a '.', we have a class subroutine or a method
+        # applied to a variable. Otherwise, we have a local
+        # method call.
+        if self._tokenizer.token == ".":
+            super()._absorb()
+            subroutine = super()._absorb(":identifier")
             var = self._symboltable.get_var(name)
+            # if name does not match any variable in the symbol table,
+            # it must be a class name
             if var is None:
-                self._write("class", name, False)
+                self._write(tag="className", token=name)
+            # otherwise we know it is a variable name
             else:
-                self._write(
-                    f"{var['kind']}.{var['type']}.{var['index']}", name, False)
-            self._write("symbol", ".", False)
-            self._write("subroutine", subroutine, True)
+                var_tag = generate_var_tag(var)
+                self._write(tag=var_tag, token=name)
+            self._write("symbol", ".")
+            self._write("subroutineName", subroutine)
             local_method = False
-        if self._check_token("(", write=False):
+        if self._tokenizer.token == "(":
             if local_method:
-                self._write("subroutine", name, False)
-            self._write_token("(")
+                self._write("subroutineName", name)
+            self._absorb("(")
             self._compile_expression_list()
-            self._write_token(")")
+            self._absorb(")")
             return True
-        elif assertion:
-            self._raise_subroutine_call_error()
         return False
 
     # -----------------------WRITING FUNCTIONS-----------------------
-    def _write(self, token_type=None, token=None, advance=True):
-        if token_type is None:
-            token_type = self._tokenizer.token_type
+    def _absorb(self, mode=None, tag=None):
+        if mode == ":identifier":
+            if tag is None:
+                raise TypeError(
+                    "_absorb() missing required argument 'tag'"
+                )
+            self._write(tag=tag)
+        elif mode == ":var_dec":
+            var = self._symboltable.get_var(self._tokenizer.token)
+            self._write(tag=generate_var_tag(var))
+        elif ((mode == ":var_type" or mode == ":subroutine_type")
+                and self._tokenizer.token == "identifier"):
+            self._write(tag="className")
+        else:
+            self._write()
+        return super()._absorb(mode)
+
+    def _write(self, tag=None, token=None):
+        if tag is None:
+            tag = self._tokenizer.token_type
         if token is None:
             token = self._tokenizer.token
-        self._writer.write(token_type, token)
-        if advance:
-            self._tokenizer.advance()
-
-    def _write_token(self, token):
-        super()._assert_token(token)
-        self._write()
-
-    def _write_identifier(self, category=None):
-        super()._assert_identifier()
-        self._write(token_type=category)
-
-    def _write_type(self):
-        super()._assert_type()
-        self._write()
-
-    def _write_subroutine_type(self):
-        super()._assert_subroutine_type()
-        self._write()
-
-    def _write_var(self, type_=None, kind=None, define=True):
-        if define:
-            self._define(type_, kind)
-        var = self._get_var(self._tokenizer.token)
-        self._write_identifier(f"{var['kind']}.{var['type']}.{var['index']}")
+        self._writer.write(tag, token)
 
     def _open_block(self, block):
         self._writer.open_block(block)
@@ -342,27 +319,7 @@ class XMLCompilationEngine(CompilationEngine):
     def _close_block(self, block):
         self._writer.close_block(block)
 
-    # ----------------------CHECKING FUNCTIONS-----------------------
-    def _check_token(self, token, write=True):
-        if self._tokenizer.token in token:
-            if write:
-                self._write()
-            return True
-        return False
 
-    # ------------------------OTHER FUNCTIONS------------------------
-    def _define(self, type_, kind, name=None):
-        if name is None:
-            name = self._tokenizer.token
-        self._symboltable.define(name, type_, kind)
+def generate_var_tag(var):
+    return f"{var['kind']}.{var['type']}.{var['index']}"
 
-
-_CLASS_VAR_DEC_KEYWORDS = frozenset(("static", "field"))
-_SUBROUTINE_DEC_KEYWORDS = frozenset(("constructor", "function", "method"))
-_TYPE_KEYWORDS = frozenset(("int", "char", "boolean"))
-_SUBROUTINE_TYPE_KEYWORDS = frozenset(("void", "int", "char", "boolean"))
-_KEYWORD_CONSTANTS = frozenset(("true", "false", "null", "this"))
-_UNARY_OPS = frozenset("-~")
-_OPS = frozenset("+-*/&|<>=")
-_TYPE_TOKENS = frozenset("(") | _UNARY_OPS | _KEYWORD_CONSTANTS
-_TYPE_TYPES = frozenset(("integerConstant", "stringConstant", "identifier"))

@@ -6,8 +6,7 @@ class JackTokenizer:
     A tokenizer for the Jack language.
 
     Reads in a .jack file and identifies the individual tokens within
-    the file, to be passed on for compilation into virtual machine
-    language.
+    the file, to be passed on for compilation
 
     Attributes
     ----------
@@ -23,12 +22,8 @@ class JackTokenizer:
         The start line number of the current token
     start_char_no : int
         The start char number of the current token
-    prev_start_line : str
-        The start line of the previous token
-    prev_start_line_no : int
-        The start line number of the previous token
-    prev_start_char_no : int
-        The start char number of the previous token
+    state : State
+        The current state of the tokenizer
 
     Methods
     -------
@@ -51,9 +46,6 @@ class JackTokenizer:
         self._start_line = ""
         self._start_line_no = 0
         self._start_char_no = 0
-        self._prev_start_line = ""
-        self._prev_start_line_no = 0
-        self._prev_start_char_no = 0
 
     def load_class(self, class_name):
         self._reset()
@@ -77,9 +69,6 @@ class JackTokenizer:
                 if first in _SPACE:
                     self._char_no += 1
                     continue
-                self._prev_start_line = self._start_line
-                self._prev_start_line_no = self._start_line_no
-                self._prev_start_char_no = self._start_char_no
                 self._start_line = self._line
                 self._start_line_no = self._line_no
                 self._start_char_no = self._char_no
@@ -185,16 +174,23 @@ class JackTokenizer:
         return self._start_char_no
 
     @property
-    def prev_start_line(self):
-        return self._prev_start_line
+    def state(self):
+        return State(
+            self._token,
+            self._token_type,
+            self._start_line,
+            self._start_line_no,
+            self._start_char_no
+        )
 
-    @property
-    def prev_start_line_no(self):
-        return self._prev_start_line_no
 
-    @property
-    def prev_start_char_no(self):
-        return self._prev_start_char_no
+class State:
+    def __init__(self, token, token_type, line, line_no, char_no):
+        self.token = token
+        self.token_type = token_type
+        self.line = line
+        self.line_no = line_no
+        self.char_no = char_no
 
 
 _START_WORD_CHARS = frozenset(

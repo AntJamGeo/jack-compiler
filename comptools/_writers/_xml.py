@@ -9,11 +9,11 @@ class XMLWriter(Writer):
     def load_class(self, class_name):
         super().load_class(class_name, ".xml")
 
-    def write(self, token_type, token):
+    def write(self, tag, token):
         self._file.write(
-            f"{self._indent}<{token_type}> "
+            f"{self._indent}<{tag}> "
             f"{_XML_MAP.get(token, token)} "
-            f"</{token_type}>\n"
+            f"</{tag}>\n"
         )
 
     def open_block(self, block):

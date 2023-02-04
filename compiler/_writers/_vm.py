@@ -1,4 +1,4 @@
-from comptools._writers._base import Writer
+from _writers._base import Writer
 
 
 class VMWriter(Writer):

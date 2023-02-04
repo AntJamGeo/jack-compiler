@@ -2,7 +2,7 @@ import sys
 import os
 import argparse
 
-from comptools import VMCompilationEngine, XMLCompilationEngine
+from engines import VMCompilationEngine, XMLCompilationEngine
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-x", "--xml", action="store_true", help="output xml")

@@ -1,8 +1,8 @@
 import os
 
-from comptools._error import JackError
-from comptools._tokenizer import JackTokenizer
-from comptools._symboltable import SymbolTable
+from _error import JackError
+from _tokenizer import JackTokenizer
+from _symboltable import SymbolTable
 
 class CompilationEngine:
     def __init__(self, writer):

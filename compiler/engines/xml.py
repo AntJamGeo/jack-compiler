@@ -1,7 +1,7 @@
 import os
 
-from comptools.engines._base import CompilationEngine
-from comptools._writers import XMLWriter
+from engines._base import CompilationEngine
+from _writers import XMLWriter
 
 
 class XMLCompilationEngine(CompilationEngine):

@@ -1,4 +1,4 @@
-from comptools._error import JackError
+from _error import JackError
 
 
 class SymbolTable:

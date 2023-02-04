@@ -1,7 +1,7 @@
 import os
 
-from comptools.engines._base import CompilationEngine
-from comptools._writers import VMWriter
+from engines._base import CompilationEngine
+from _writers import VMWriter
 
 
 class VMCompilationEngine(CompilationEngine):

@@ -1,0 +1,7 @@
+class String
+{field String s;
+    function String f1() {
+        let s = " 2ojojoj
+  doiajwdoa";
+}
+}

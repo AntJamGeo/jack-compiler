@@ -1,0 +1,3 @@
+class Identifier {
+    static int x, true;
+}

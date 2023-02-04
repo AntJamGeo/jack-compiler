@@ -1,0 +1,8 @@
+class Arr {
+    field Array arr;
+    field int x;
+    function void f1 () {
+        let arr[0] = 0;
+        let arr[1] = x[0];
+    }
+}

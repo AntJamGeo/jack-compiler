@@ -1,0 +1,1859 @@
+<class>
+  <keyword> class </keyword>
+  <identifier> Ball </identifier>
+  <symbol> { </symbol>
+  <classVarDec>
+    <keyword> field </keyword>
+    <keyword> int </keyword>
+    <this.int.0> x </this.int.0>
+    <symbol> , </symbol>
+    <this.int.1> y </this.int.1>
+    <symbol> ; </symbol>
+  </classVarDec>
+  <classVarDec>
+    <keyword> field </keyword>
+    <keyword> int </keyword>
+    <this.int.2> lengthx </this.int.2>
+    <symbol> , </symbol>
+    <this.int.3> lengthy </this.int.3>
+    <symbol> ; </symbol>
+  </classVarDec>
+  <classVarDec>
+    <keyword> field </keyword>
+    <keyword> int </keyword>
+    <this.int.4> d </this.int.4>
+    <symbol> , </symbol>
+    <this.int.5> straightD </this.int.5>
+    <symbol> , </symbol>
+    <this.int.6> diagonalD </this.int.6>
+    <symbol> ; </symbol>
+  </classVarDec>
+  <classVarDec>
+    <keyword> field </keyword>
+    <keyword> boolean </keyword>
+    <this.boolean.7> invert </this.boolean.7>
+    <symbol> , </symbol>
+    <this.boolean.8> positivex </this.boolean.8>
+    <symbol> , </symbol>
+    <this.boolean.9> positivey </this.boolean.9>
+    <symbol> ; </symbol>
+  </classVarDec>
+  <classVarDec>
+    <keyword> field </keyword>
+    <keyword> int </keyword>
+    <this.int.10> leftWall </this.int.10>
+    <symbol> , </symbol>
+    <this.int.11> rightWall </this.int.11>
+    <symbol> , </symbol>
+    <this.int.12> topWall </this.int.12>
+    <symbol> , </symbol>
+    <this.int.13> bottomWall </this.int.13>
+    <symbol> ; </symbol>
+  </classVarDec>
+  <classVarDec>
+    <keyword> field </keyword>
+    <keyword> int </keyword>
+    <this.int.14> wall </this.int.14>
+    <symbol> ; </symbol>
+  </classVarDec>
+  <subroutineDec>
+    <keyword> constructor </keyword>
+    <identifier> Ball </identifier>
+    <subroutineName> new </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+      <keyword> int </keyword>
+      <argument.int.0> Ax </argument.int.0>
+      <symbol> , </symbol>
+      <keyword> int </keyword>
+      <argument.int.1> Ay </argument.int.1>
+      <symbol> , </symbol>
+      <keyword> int </keyword>
+      <argument.int.2> AleftWall </argument.int.2>
+      <symbol> , </symbol>
+      <keyword> int </keyword>
+      <argument.int.3> ArightWall </argument.int.3>
+      <symbol> , </symbol>
+      <keyword> int </keyword>
+      <argument.int.4> AtopWall </argument.int.4>
+      <symbol> , </symbol>
+      <keyword> int </keyword>
+      <argument.int.5> AbottomWall </argument.int.5>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.0> x </this.int.0>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <argument.int.0> Ax </argument.int.0>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.1> y </this.int.1>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <argument.int.1> Ay </argument.int.1>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.10> leftWall </this.int.10>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <argument.int.2> AleftWall </argument.int.2>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.11> rightWall </this.int.11>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <argument.int.3> ArightWall </argument.int.3>
+            </term>
+            <symbol> - </symbol>
+            <term>
+              <integerConstant> 6 </integerConstant>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.12> topWall </this.int.12>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <argument.int.4> AtopWall </argument.int.4>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.13> bottomWall </this.int.13>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <argument.int.5> AbottomWall </argument.int.5>
+            </term>
+            <symbol> - </symbol>
+            <term>
+              <integerConstant> 6 </integerConstant>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.14> wall </this.int.14>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <integerConstant> 0 </integerConstant>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <doStatement>
+          <keyword> do </keyword>
+          <subroutineName> show </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <expression>
+            <term>
+              <keyword> this </keyword>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> method </keyword>
+    <keyword> void </keyword>
+    <subroutineName> dispose </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <doStatement>
+          <keyword> do </keyword>
+          <className> Memory </className>
+          <symbol> . </symbol>
+          <subroutineName> deAlloc </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+            <expression>
+              <term>
+                <keyword> this </keyword>
+              </term>
+            </expression>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> method </keyword>
+    <keyword> void </keyword>
+    <subroutineName> show </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <doStatement>
+          <keyword> do </keyword>
+          <className> Screen </className>
+          <symbol> . </symbol>
+          <subroutineName> setColor </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+            <expression>
+              <term>
+                <keyword> true </keyword>
+              </term>
+            </expression>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <doStatement>
+          <keyword> do </keyword>
+          <subroutineName> draw </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> method </keyword>
+    <keyword> void </keyword>
+    <subroutineName> hide </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <doStatement>
+          <keyword> do </keyword>
+          <className> Screen </className>
+          <symbol> . </symbol>
+          <subroutineName> setColor </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+            <expression>
+              <term>
+                <keyword> false </keyword>
+              </term>
+            </expression>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <doStatement>
+          <keyword> do </keyword>
+          <subroutineName> draw </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> method </keyword>
+    <keyword> void </keyword>
+    <subroutineName> draw </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <doStatement>
+          <keyword> do </keyword>
+          <className> Screen </className>
+          <symbol> . </symbol>
+          <subroutineName> drawRectangle </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+            <expression>
+              <term>
+                <this.int.0> x </this.int.0>
+              </term>
+            </expression>
+            <symbol> , </symbol>
+            <expression>
+              <term>
+                <this.int.1> y </this.int.1>
+              </term>
+            </expression>
+            <symbol> , </symbol>
+            <expression>
+              <term>
+                <this.int.0> x </this.int.0>
+              </term>
+              <symbol> + </symbol>
+              <term>
+                <integerConstant> 5 </integerConstant>
+              </term>
+            </expression>
+            <symbol> , </symbol>
+            <expression>
+              <term>
+                <this.int.1> y </this.int.1>
+              </term>
+              <symbol> + </symbol>
+              <term>
+                <integerConstant> 5 </integerConstant>
+              </term>
+            </expression>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> method </keyword>
+    <keyword> int </keyword>
+    <subroutineName> getLeft </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <returnStatement>
+          <keyword> return </keyword>
+          <expression>
+            <term>
+              <this.int.0> x </this.int.0>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> method </keyword>
+    <keyword> int </keyword>
+    <subroutineName> getRight </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <returnStatement>
+          <keyword> return </keyword>
+          <expression>
+            <term>
+              <this.int.0> x </this.int.0>
+            </term>
+            <symbol> + </symbol>
+            <term>
+              <integerConstant> 5 </integerConstant>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> method </keyword>
+    <keyword> void </keyword>
+    <subroutineName> setDestination </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+      <keyword> int </keyword>
+      <argument.int.1> destx </argument.int.1>
+      <symbol> , </symbol>
+      <keyword> int </keyword>
+      <argument.int.2> desty </argument.int.2>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <varDec>
+        <keyword> var </keyword>
+        <keyword> int </keyword>
+        <local.int.0> dx </local.int.0>
+        <symbol> , </symbol>
+        <local.int.1> dy </local.int.1>
+        <symbol> , </symbol>
+        <local.int.2> temp </local.int.2>
+        <symbol> ; </symbol>
+      </varDec>
+      <statements>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.2> lengthx </this.int.2>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <argument.int.1> destx </argument.int.1>
+            </term>
+            <symbol> - </symbol>
+            <term>
+              <this.int.0> x </this.int.0>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.3> lengthy </this.int.3>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <argument.int.2> desty </argument.int.2>
+            </term>
+            <symbol> - </symbol>
+            <term>
+              <this.int.1> y </this.int.1>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <local.int.0> dx </local.int.0>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <className> Math </className>
+              <symbol> . </symbol>
+              <subroutineName> abs </subroutineName>
+              <symbol> ( </symbol>
+              <expressionList>
+                <expression>
+                  <term>
+                    <this.int.2> lengthx </this.int.2>
+                  </term>
+                </expression>
+              </expressionList>
+              <symbol> ) </symbol>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <local.int.1> dy </local.int.1>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <className> Math </className>
+              <symbol> . </symbol>
+              <subroutineName> abs </subroutineName>
+              <symbol> ( </symbol>
+              <expressionList>
+                <expression>
+                  <term>
+                    <this.int.3> lengthy </this.int.3>
+                  </term>
+                </expression>
+              </expressionList>
+              <symbol> ) </symbol>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.boolean.7> invert </this.boolean.7>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <symbol> ( </symbol>
+              <expression>
+                <term>
+                  <local.int.0> dx </local.int.0>
+                </term>
+                <symbol> &lt; </symbol>
+                <term>
+                  <local.int.1> dy </local.int.1>
+                </term>
+              </expression>
+              <symbol> ) </symbol>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <ifStatement>
+          <keyword> if </keyword>
+          <symbol> ( </symbol>
+          <expression>
+            <term>
+              <this.boolean.7> invert </this.boolean.7>
+            </term>
+          </expression>
+          <symbol> ) </symbol>
+          <symbol> { </symbol>
+          <statements>
+            <letStatement>
+              <keyword> let </keyword>
+              <local.int.2> temp </local.int.2>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <local.int.0> dx </local.int.0>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <letStatement>
+              <keyword> let </keyword>
+              <local.int.0> dx </local.int.0>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <local.int.1> dy </local.int.1>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <letStatement>
+              <keyword> let </keyword>
+              <local.int.1> dy </local.int.1>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <local.int.2> temp </local.int.2>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <letStatement>
+              <keyword> let </keyword>
+              <this.boolean.8> positivex </this.boolean.8>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <symbol> ( </symbol>
+                  <expression>
+                    <term>
+                      <this.int.1> y </this.int.1>
+                    </term>
+                    <symbol> &lt; </symbol>
+                    <term>
+                      <argument.int.2> desty </argument.int.2>
+                    </term>
+                  </expression>
+                  <symbol> ) </symbol>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <letStatement>
+              <keyword> let </keyword>
+              <this.boolean.9> positivey </this.boolean.9>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <symbol> ( </symbol>
+                  <expression>
+                    <term>
+                      <this.int.0> x </this.int.0>
+                    </term>
+                    <symbol> &lt; </symbol>
+                    <term>
+                      <argument.int.1> destx </argument.int.1>
+                    </term>
+                  </expression>
+                  <symbol> ) </symbol>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+          </statements>
+          <symbol> } </symbol>
+          <keyword> else </keyword>
+          <symbol> { </symbol>
+          <statements>
+            <letStatement>
+              <keyword> let </keyword>
+              <this.boolean.8> positivex </this.boolean.8>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <symbol> ( </symbol>
+                  <expression>
+                    <term>
+                      <this.int.0> x </this.int.0>
+                    </term>
+                    <symbol> &lt; </symbol>
+                    <term>
+                      <argument.int.1> destx </argument.int.1>
+                    </term>
+                  </expression>
+                  <symbol> ) </symbol>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <letStatement>
+              <keyword> let </keyword>
+              <this.boolean.9> positivey </this.boolean.9>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <symbol> ( </symbol>
+                  <expression>
+                    <term>
+                      <this.int.1> y </this.int.1>
+                    </term>
+                    <symbol> &lt; </symbol>
+                    <term>
+                      <argument.int.2> desty </argument.int.2>
+                    </term>
+                  </expression>
+                  <symbol> ) </symbol>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+          </statements>
+          <symbol> } </symbol>
+        </ifStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.4> d </this.int.4>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <symbol> ( </symbol>
+              <expression>
+                <term>
+                  <integerConstant> 2 </integerConstant>
+                </term>
+                <symbol> * </symbol>
+                <term>
+                  <local.int.1> dy </local.int.1>
+                </term>
+              </expression>
+              <symbol> ) </symbol>
+            </term>
+            <symbol> - </symbol>
+            <term>
+              <local.int.0> dx </local.int.0>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.5> straightD </this.int.5>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <integerConstant> 2 </integerConstant>
+            </term>
+            <symbol> * </symbol>
+            <term>
+              <local.int.1> dy </local.int.1>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.6> diagonalD </this.int.6>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <integerConstant> 2 </integerConstant>
+            </term>
+            <symbol> * </symbol>
+            <term>
+              <symbol> ( </symbol>
+              <expression>
+                <term>
+                  <local.int.1> dy </local.int.1>
+                </term>
+                <symbol> - </symbol>
+                <term>
+                  <local.int.0> dx </local.int.0>
+                </term>
+              </expression>
+              <symbol> ) </symbol>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> method </keyword>
+    <keyword> int </keyword>
+    <subroutineName> move </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <doStatement>
+          <keyword> do </keyword>
+          <subroutineName> hide </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <ifStatement>
+          <keyword> if </keyword>
+          <symbol> ( </symbol>
+          <expression>
+            <term>
+              <this.int.4> d </this.int.4>
+            </term>
+            <symbol> &lt; </symbol>
+            <term>
+              <integerConstant> 0 </integerConstant>
+            </term>
+          </expression>
+          <symbol> ) </symbol>
+          <symbol> { </symbol>
+          <statements>
+            <letStatement>
+              <keyword> let </keyword>
+              <this.int.4> d </this.int.4>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <this.int.4> d </this.int.4>
+                </term>
+                <symbol> + </symbol>
+                <term>
+                  <this.int.5> straightD </this.int.5>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+          </statements>
+          <symbol> } </symbol>
+          <keyword> else </keyword>
+          <symbol> { </symbol>
+          <statements>
+            <letStatement>
+              <keyword> let </keyword>
+              <this.int.4> d </this.int.4>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <this.int.4> d </this.int.4>
+                </term>
+                <symbol> + </symbol>
+                <term>
+                  <this.int.6> diagonalD </this.int.6>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <ifStatement>
+              <keyword> if </keyword>
+              <symbol> ( </symbol>
+              <expression>
+                <term>
+                  <this.boolean.9> positivey </this.boolean.9>
+                </term>
+              </expression>
+              <symbol> ) </symbol>
+              <symbol> { </symbol>
+              <statements>
+                <ifStatement>
+                  <keyword> if </keyword>
+                  <symbol> ( </symbol>
+                  <expression>
+                    <term>
+                      <this.boolean.7> invert </this.boolean.7>
+                    </term>
+                  </expression>
+                  <symbol> ) </symbol>
+                  <symbol> { </symbol>
+                  <statements>
+                    <letStatement>
+                      <keyword> let </keyword>
+                      <this.int.0> x </this.int.0>
+                      <symbol> = </symbol>
+                      <expression>
+                        <term>
+                          <this.int.0> x </this.int.0>
+                        </term>
+                        <symbol> + </symbol>
+                        <term>
+                          <integerConstant> 4 </integerConstant>
+                        </term>
+                      </expression>
+                      <symbol> ; </symbol>
+                    </letStatement>
+                  </statements>
+                  <symbol> } </symbol>
+                  <keyword> else </keyword>
+                  <symbol> { </symbol>
+                  <statements>
+                    <letStatement>
+                      <keyword> let </keyword>
+                      <this.int.1> y </this.int.1>
+                      <symbol> = </symbol>
+                      <expression>
+                        <term>
+                          <this.int.1> y </this.int.1>
+                        </term>
+                        <symbol> + </symbol>
+                        <term>
+                          <integerConstant> 4 </integerConstant>
+                        </term>
+                      </expression>
+                      <symbol> ; </symbol>
+                    </letStatement>
+                  </statements>
+                  <symbol> } </symbol>
+                </ifStatement>
+              </statements>
+              <symbol> } </symbol>
+              <keyword> else </keyword>
+              <symbol> { </symbol>
+              <statements>
+                <ifStatement>
+                  <keyword> if </keyword>
+                  <symbol> ( </symbol>
+                  <expression>
+                    <term>
+                      <this.boolean.7> invert </this.boolean.7>
+                    </term>
+                  </expression>
+                  <symbol> ) </symbol>
+                  <symbol> { </symbol>
+                  <statements>
+                    <letStatement>
+                      <keyword> let </keyword>
+                      <this.int.0> x </this.int.0>
+                      <symbol> = </symbol>
+                      <expression>
+                        <term>
+                          <this.int.0> x </this.int.0>
+                        </term>
+                        <symbol> - </symbol>
+                        <term>
+                          <integerConstant> 4 </integerConstant>
+                        </term>
+                      </expression>
+                      <symbol> ; </symbol>
+                    </letStatement>
+                  </statements>
+                  <symbol> } </symbol>
+                  <keyword> else </keyword>
+                  <symbol> { </symbol>
+                  <statements>
+                    <letStatement>
+                      <keyword> let </keyword>
+                      <this.int.1> y </this.int.1>
+                      <symbol> = </symbol>
+                      <expression>
+                        <term>
+                          <this.int.1> y </this.int.1>
+                        </term>
+                        <symbol> - </symbol>
+                        <term>
+                          <integerConstant> 4 </integerConstant>
+                        </term>
+                      </expression>
+                      <symbol> ; </symbol>
+                    </letStatement>
+                  </statements>
+                  <symbol> } </symbol>
+                </ifStatement>
+              </statements>
+              <symbol> } </symbol>
+            </ifStatement>
+          </statements>
+          <symbol> } </symbol>
+        </ifStatement>
+        <ifStatement>
+          <keyword> if </keyword>
+          <symbol> ( </symbol>
+          <expression>
+            <term>
+              <this.boolean.8> positivex </this.boolean.8>
+            </term>
+          </expression>
+          <symbol> ) </symbol>
+          <symbol> { </symbol>
+          <statements>
+            <ifStatement>
+              <keyword> if </keyword>
+              <symbol> ( </symbol>
+              <expression>
+                <term>
+                  <this.boolean.7> invert </this.boolean.7>
+                </term>
+              </expression>
+              <symbol> ) </symbol>
+              <symbol> { </symbol>
+              <statements>
+                <letStatement>
+                  <keyword> let </keyword>
+                  <this.int.1> y </this.int.1>
+                  <symbol> = </symbol>
+                  <expression>
+                    <term>
+                      <this.int.1> y </this.int.1>
+                    </term>
+                    <symbol> + </symbol>
+                    <term>
+                      <integerConstant> 4 </integerConstant>
+                    </term>
+                  </expression>
+                  <symbol> ; </symbol>
+                </letStatement>
+              </statements>
+              <symbol> } </symbol>
+              <keyword> else </keyword>
+              <symbol> { </symbol>
+              <statements>
+                <letStatement>
+                  <keyword> let </keyword>
+                  <this.int.0> x </this.int.0>
+                  <symbol> = </symbol>
+                  <expression>
+                    <term>
+                      <this.int.0> x </this.int.0>
+                    </term>
+                    <symbol> + </symbol>
+                    <term>
+                      <integerConstant> 4 </integerConstant>
+                    </term>
+                  </expression>
+                  <symbol> ; </symbol>
+                </letStatement>
+              </statements>
+              <symbol> } </symbol>
+            </ifStatement>
+          </statements>
+          <symbol> } </symbol>
+          <keyword> else </keyword>
+          <symbol> { </symbol>
+          <statements>
+            <ifStatement>
+              <keyword> if </keyword>
+              <symbol> ( </symbol>
+              <expression>
+                <term>
+                  <this.boolean.7> invert </this.boolean.7>
+                </term>
+              </expression>
+              <symbol> ) </symbol>
+              <symbol> { </symbol>
+              <statements>
+                <letStatement>
+                  <keyword> let </keyword>
+                  <this.int.1> y </this.int.1>
+                  <symbol> = </symbol>
+                  <expression>
+                    <term>
+                      <this.int.1> y </this.int.1>
+                    </term>
+                    <symbol> - </symbol>
+                    <term>
+                      <integerConstant> 4 </integerConstant>
+                    </term>
+                  </expression>
+                  <symbol> ; </symbol>
+                </letStatement>
+              </statements>
+              <symbol> } </symbol>
+              <keyword> else </keyword>
+              <symbol> { </symbol>
+              <statements>
+                <letStatement>
+                  <keyword> let </keyword>
+                  <this.int.0> x </this.int.0>
+                  <symbol> = </symbol>
+                  <expression>
+                    <term>
+                      <this.int.0> x </this.int.0>
+                    </term>
+                    <symbol> - </symbol>
+                    <term>
+                      <integerConstant> 4 </integerConstant>
+                    </term>
+                  </expression>
+                  <symbol> ; </symbol>
+                </letStatement>
+              </statements>
+              <symbol> } </symbol>
+            </ifStatement>
+          </statements>
+          <symbol> } </symbol>
+        </ifStatement>
+        <ifStatement>
+          <keyword> if </keyword>
+          <symbol> ( </symbol>
+          <expression>
+            <term>
+              <symbol> ~ </symbol>
+              <term>
+                <symbol> ( </symbol>
+                <expression>
+                  <term>
+                    <this.int.0> x </this.int.0>
+                  </term>
+                  <symbol> &gt; </symbol>
+                  <term>
+                    <this.int.10> leftWall </this.int.10>
+                  </term>
+                </expression>
+                <symbol> ) </symbol>
+              </term>
+            </term>
+          </expression>
+          <symbol> ) </symbol>
+          <symbol> { </symbol>
+          <statements>
+            <letStatement>
+              <keyword> let </keyword>
+              <this.int.14> wall </this.int.14>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <integerConstant> 1 </integerConstant>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <letStatement>
+              <keyword> let </keyword>
+              <this.int.0> x </this.int.0>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <this.int.10> leftWall </this.int.10>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+          </statements>
+          <symbol> } </symbol>
+        </ifStatement>
+        <ifStatement>
+          <keyword> if </keyword>
+          <symbol> ( </symbol>
+          <expression>
+            <term>
+              <symbol> ~ </symbol>
+              <term>
+                <symbol> ( </symbol>
+                <expression>
+                  <term>
+                    <this.int.0> x </this.int.0>
+                  </term>
+                  <symbol> &lt; </symbol>
+                  <term>
+                    <this.int.11> rightWall </this.int.11>
+                  </term>
+                </expression>
+                <symbol> ) </symbol>
+              </term>
+            </term>
+          </expression>
+          <symbol> ) </symbol>
+          <symbol> { </symbol>
+          <statements>
+            <letStatement>
+              <keyword> let </keyword>
+              <this.int.14> wall </this.int.14>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <integerConstant> 2 </integerConstant>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <letStatement>
+              <keyword> let </keyword>
+              <this.int.0> x </this.int.0>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <this.int.11> rightWall </this.int.11>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+          </statements>
+          <symbol> } </symbol>
+        </ifStatement>
+        <ifStatement>
+          <keyword> if </keyword>
+          <symbol> ( </symbol>
+          <expression>
+            <term>
+              <symbol> ~ </symbol>
+              <term>
+                <symbol> ( </symbol>
+                <expression>
+                  <term>
+                    <this.int.1> y </this.int.1>
+                  </term>
+                  <symbol> &gt; </symbol>
+                  <term>
+                    <this.int.12> topWall </this.int.12>
+                  </term>
+                </expression>
+                <symbol> ) </symbol>
+              </term>
+            </term>
+          </expression>
+          <symbol> ) </symbol>
+          <symbol> { </symbol>
+          <statements>
+            <letStatement>
+              <keyword> let </keyword>
+              <this.int.14> wall </this.int.14>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <integerConstant> 3 </integerConstant>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <letStatement>
+              <keyword> let </keyword>
+              <this.int.1> y </this.int.1>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <this.int.12> topWall </this.int.12>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+          </statements>
+          <symbol> } </symbol>
+        </ifStatement>
+        <ifStatement>
+          <keyword> if </keyword>
+          <symbol> ( </symbol>
+          <expression>
+            <term>
+              <symbol> ~ </symbol>
+              <term>
+                <symbol> ( </symbol>
+                <expression>
+                  <term>
+                    <this.int.1> y </this.int.1>
+                  </term>
+                  <symbol> &lt; </symbol>
+                  <term>
+                    <this.int.13> bottomWall </this.int.13>
+                  </term>
+                </expression>
+                <symbol> ) </symbol>
+              </term>
+            </term>
+          </expression>
+          <symbol> ) </symbol>
+          <symbol> { </symbol>
+          <statements>
+            <letStatement>
+              <keyword> let </keyword>
+              <this.int.14> wall </this.int.14>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <integerConstant> 4 </integerConstant>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <letStatement>
+              <keyword> let </keyword>
+              <this.int.1> y </this.int.1>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <this.int.13> bottomWall </this.int.13>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+          </statements>
+          <symbol> } </symbol>
+        </ifStatement>
+        <doStatement>
+          <keyword> do </keyword>
+          <subroutineName> show </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <expression>
+            <term>
+              <this.int.14> wall </this.int.14>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> method </keyword>
+    <keyword> void </keyword>
+    <subroutineName> bounce </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+      <keyword> int </keyword>
+      <argument.int.1> bouncingDirection </argument.int.1>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <varDec>
+        <keyword> var </keyword>
+        <keyword> int </keyword>
+        <local.int.0> newx </local.int.0>
+        <symbol> , </symbol>
+        <local.int.1> newy </local.int.1>
+        <symbol> , </symbol>
+        <local.int.2> divLengthx </local.int.2>
+        <symbol> , </symbol>
+        <local.int.3> divLengthy </local.int.3>
+        <symbol> , </symbol>
+        <local.int.4> factor </local.int.4>
+        <symbol> ; </symbol>
+      </varDec>
+      <statements>
+        <letStatement>
+          <keyword> let </keyword>
+          <local.int.2> divLengthx </local.int.2>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <this.int.2> lengthx </this.int.2>
+            </term>
+            <symbol> / </symbol>
+            <term>
+              <integerConstant> 10 </integerConstant>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <local.int.3> divLengthy </local.int.3>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <this.int.3> lengthy </this.int.3>
+            </term>
+            <symbol> / </symbol>
+            <term>
+              <integerConstant> 10 </integerConstant>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <ifStatement>
+          <keyword> if </keyword>
+          <symbol> ( </symbol>
+          <expression>
+            <term>
+              <argument.int.1> bouncingDirection </argument.int.1>
+            </term>
+            <symbol> = </symbol>
+            <term>
+              <integerConstant> 0 </integerConstant>
+            </term>
+          </expression>
+          <symbol> ) </symbol>
+          <symbol> { </symbol>
+          <statements>
+            <letStatement>
+              <keyword> let </keyword>
+              <local.int.4> factor </local.int.4>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <integerConstant> 10 </integerConstant>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+          </statements>
+          <symbol> } </symbol>
+          <keyword> else </keyword>
+          <symbol> { </symbol>
+          <statements>
+            <ifStatement>
+              <keyword> if </keyword>
+              <symbol> ( </symbol>
+              <expression>
+                <term>
+                  <symbol> ( </symbol>
+                  <expression>
+                    <term>
+                      <symbol> ( </symbol>
+                      <expression>
+                        <term>
+                          <symbol> ~ </symbol>
+                          <term>
+                            <symbol> ( </symbol>
+                            <expression>
+                              <term>
+                                <this.int.2> lengthx </this.int.2>
+                              </term>
+                              <symbol> &lt; </symbol>
+                              <term>
+                                <integerConstant> 0 </integerConstant>
+                              </term>
+                            </expression>
+                            <symbol> ) </symbol>
+                          </term>
+                        </term>
+                      </expression>
+                      <symbol> ) </symbol>
+                    </term>
+                    <symbol> &amp; </symbol>
+                    <term>
+                      <symbol> ( </symbol>
+                      <expression>
+                        <term>
+                          <argument.int.1> bouncingDirection </argument.int.1>
+                        </term>
+                        <symbol> = </symbol>
+                        <term>
+                          <integerConstant> 1 </integerConstant>
+                        </term>
+                      </expression>
+                      <symbol> ) </symbol>
+                    </term>
+                  </expression>
+                  <symbol> ) </symbol>
+                </term>
+                <symbol> | </symbol>
+                <term>
+                  <symbol> ( </symbol>
+                  <expression>
+                    <term>
+                      <symbol> ( </symbol>
+                      <expression>
+                        <term>
+                          <this.int.2> lengthx </this.int.2>
+                        </term>
+                        <symbol> &lt; </symbol>
+                        <term>
+                          <integerConstant> 0 </integerConstant>
+                        </term>
+                      </expression>
+                      <symbol> ) </symbol>
+                    </term>
+                    <symbol> &amp; </symbol>
+                    <term>
+                      <symbol> ( </symbol>
+                      <expression>
+                        <term>
+                          <argument.int.1> bouncingDirection </argument.int.1>
+                        </term>
+                        <symbol> = </symbol>
+                        <term>
+                          <symbol> ( </symbol>
+                          <expression>
+                            <term>
+                              <symbol> - </symbol>
+                              <term>
+                                <integerConstant> 1 </integerConstant>
+                              </term>
+                            </term>
+                          </expression>
+                          <symbol> ) </symbol>
+                        </term>
+                      </expression>
+                      <symbol> ) </symbol>
+                    </term>
+                  </expression>
+                  <symbol> ) </symbol>
+                </term>
+              </expression>
+              <symbol> ) </symbol>
+              <symbol> { </symbol>
+              <statements>
+                <letStatement>
+                  <keyword> let </keyword>
+                  <local.int.4> factor </local.int.4>
+                  <symbol> = </symbol>
+                  <expression>
+                    <term>
+                      <integerConstant> 20 </integerConstant>
+                    </term>
+                  </expression>
+                  <symbol> ; </symbol>
+                </letStatement>
+              </statements>
+              <symbol> } </symbol>
+              <keyword> else </keyword>
+              <symbol> { </symbol>
+              <statements>
+                <letStatement>
+                  <keyword> let </keyword>
+                  <local.int.4> factor </local.int.4>
+                  <symbol> = </symbol>
+                  <expression>
+                    <term>
+                      <integerConstant> 5 </integerConstant>
+                    </term>
+                  </expression>
+                  <symbol> ; </symbol>
+                </letStatement>
+              </statements>
+              <symbol> } </symbol>
+            </ifStatement>
+          </statements>
+          <symbol> } </symbol>
+        </ifStatement>
+        <ifStatement>
+          <keyword> if </keyword>
+          <symbol> ( </symbol>
+          <expression>
+            <term>
+              <this.int.14> wall </this.int.14>
+            </term>
+            <symbol> = </symbol>
+            <term>
+              <integerConstant> 1 </integerConstant>
+            </term>
+          </expression>
+          <symbol> ) </symbol>
+          <symbol> { </symbol>
+          <statements>
+            <letStatement>
+              <keyword> let </keyword>
+              <local.int.0> newx </local.int.0>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <integerConstant> 506 </integerConstant>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <letStatement>
+              <keyword> let </keyword>
+              <local.int.1> newy </local.int.1>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <symbol> ( </symbol>
+                  <expression>
+                    <term>
+                      <local.int.3> divLengthy </local.int.3>
+                    </term>
+                    <symbol> * </symbol>
+                    <term>
+                      <symbol> ( </symbol>
+                      <expression>
+                        <term>
+                          <symbol> - </symbol>
+                          <term>
+                            <integerConstant> 50 </integerConstant>
+                          </term>
+                        </term>
+                      </expression>
+                      <symbol> ) </symbol>
+                    </term>
+                  </expression>
+                  <symbol> ) </symbol>
+                </term>
+                <symbol> / </symbol>
+                <term>
+                  <local.int.2> divLengthx </local.int.2>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <letStatement>
+              <keyword> let </keyword>
+              <local.int.1> newy </local.int.1>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <this.int.1> y </this.int.1>
+                </term>
+                <symbol> + </symbol>
+                <term>
+                  <symbol> ( </symbol>
+                  <expression>
+                    <term>
+                      <local.int.1> newy </local.int.1>
+                    </term>
+                    <symbol> * </symbol>
+                    <term>
+                      <local.int.4> factor </local.int.4>
+                    </term>
+                  </expression>
+                  <symbol> ) </symbol>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+          </statements>
+          <symbol> } </symbol>
+          <keyword> else </keyword>
+          <symbol> { </symbol>
+          <statements>
+            <ifStatement>
+              <keyword> if </keyword>
+              <symbol> ( </symbol>
+              <expression>
+                <term>
+                  <this.int.14> wall </this.int.14>
+                </term>
+                <symbol> = </symbol>
+                <term>
+                  <integerConstant> 2 </integerConstant>
+                </term>
+              </expression>
+              <symbol> ) </symbol>
+              <symbol> { </symbol>
+              <statements>
+                <letStatement>
+                  <keyword> let </keyword>
+                  <local.int.0> newx </local.int.0>
+                  <symbol> = </symbol>
+                  <expression>
+                    <term>
+                      <integerConstant> 0 </integerConstant>
+                    </term>
+                  </expression>
+                  <symbol> ; </symbol>
+                </letStatement>
+                <letStatement>
+                  <keyword> let </keyword>
+                  <local.int.1> newy </local.int.1>
+                  <symbol> = </symbol>
+                  <expression>
+                    <term>
+                      <symbol> ( </symbol>
+                      <expression>
+                        <term>
+                          <local.int.3> divLengthy </local.int.3>
+                        </term>
+                        <symbol> * </symbol>
+                        <term>
+                          <integerConstant> 50 </integerConstant>
+                        </term>
+                      </expression>
+                      <symbol> ) </symbol>
+                    </term>
+                    <symbol> / </symbol>
+                    <term>
+                      <local.int.2> divLengthx </local.int.2>
+                    </term>
+                  </expression>
+                  <symbol> ; </symbol>
+                </letStatement>
+                <letStatement>
+                  <keyword> let </keyword>
+                  <local.int.1> newy </local.int.1>
+                  <symbol> = </symbol>
+                  <expression>
+                    <term>
+                      <this.int.1> y </this.int.1>
+                    </term>
+                    <symbol> + </symbol>
+                    <term>
+                      <symbol> ( </symbol>
+                      <expression>
+                        <term>
+                          <local.int.1> newy </local.int.1>
+                        </term>
+                        <symbol> * </symbol>
+                        <term>
+                          <local.int.4> factor </local.int.4>
+                        </term>
+                      </expression>
+                      <symbol> ) </symbol>
+                    </term>
+                  </expression>
+                  <symbol> ; </symbol>
+                </letStatement>
+              </statements>
+              <symbol> } </symbol>
+              <keyword> else </keyword>
+              <symbol> { </symbol>
+              <statements>
+                <ifStatement>
+                  <keyword> if </keyword>
+                  <symbol> ( </symbol>
+                  <expression>
+                    <term>
+                      <this.int.14> wall </this.int.14>
+                    </term>
+                    <symbol> = </symbol>
+                    <term>
+                      <integerConstant> 3 </integerConstant>
+                    </term>
+                  </expression>
+                  <symbol> ) </symbol>
+                  <symbol> { </symbol>
+                  <statements>
+                    <letStatement>
+                      <keyword> let </keyword>
+                      <local.int.1> newy </local.int.1>
+                      <symbol> = </symbol>
+                      <expression>
+                        <term>
+                          <integerConstant> 250 </integerConstant>
+                        </term>
+                      </expression>
+                      <symbol> ; </symbol>
+                    </letStatement>
+                    <letStatement>
+                      <keyword> let </keyword>
+                      <local.int.0> newx </local.int.0>
+                      <symbol> = </symbol>
+                      <expression>
+                        <term>
+                          <symbol> ( </symbol>
+                          <expression>
+                            <term>
+                              <local.int.2> divLengthx </local.int.2>
+                            </term>
+                            <symbol> * </symbol>
+                            <term>
+                              <symbol> ( </symbol>
+                              <expression>
+                                <term>
+                                  <symbol> - </symbol>
+                                  <term>
+                                    <integerConstant> 25 </integerConstant>
+                                  </term>
+                                </term>
+                              </expression>
+                              <symbol> ) </symbol>
+                            </term>
+                          </expression>
+                          <symbol> ) </symbol>
+                        </term>
+                        <symbol> / </symbol>
+                        <term>
+                          <local.int.3> divLengthy </local.int.3>
+                        </term>
+                      </expression>
+                      <symbol> ; </symbol>
+                    </letStatement>
+                    <letStatement>
+                      <keyword> let </keyword>
+                      <local.int.0> newx </local.int.0>
+                      <symbol> = </symbol>
+                      <expression>
+                        <term>
+                          <this.int.0> x </this.int.0>
+                        </term>
+                        <symbol> + </symbol>
+                        <term>
+                          <symbol> ( </symbol>
+                          <expression>
+                            <term>
+                              <local.int.0> newx </local.int.0>
+                            </term>
+                            <symbol> * </symbol>
+                            <term>
+                              <local.int.4> factor </local.int.4>
+                            </term>
+                          </expression>
+                          <symbol> ) </symbol>
+                        </term>
+                      </expression>
+                      <symbol> ; </symbol>
+                    </letStatement>
+                  </statements>
+                  <symbol> } </symbol>
+                  <keyword> else </keyword>
+                  <symbol> { </symbol>
+                  <statements>
+                    <letStatement>
+                      <keyword> let </keyword>
+                      <local.int.1> newy </local.int.1>
+                      <symbol> = </symbol>
+                      <expression>
+                        <term>
+                          <integerConstant> 0 </integerConstant>
+                        </term>
+                      </expression>
+                      <symbol> ; </symbol>
+                    </letStatement>
+                    <letStatement>
+                      <keyword> let </keyword>
+                      <local.int.0> newx </local.int.0>
+                      <symbol> = </symbol>
+                      <expression>
+                        <term>
+                          <symbol> ( </symbol>
+                          <expression>
+                            <term>
+                              <local.int.2> divLengthx </local.int.2>
+                            </term>
+                            <symbol> * </symbol>
+                            <term>
+                              <integerConstant> 25 </integerConstant>
+                            </term>
+                          </expression>
+                          <symbol> ) </symbol>
+                        </term>
+                        <symbol> / </symbol>
+                        <term>
+                          <local.int.3> divLengthy </local.int.3>
+                        </term>
+                      </expression>
+                      <symbol> ; </symbol>
+                    </letStatement>
+                    <letStatement>
+                      <keyword> let </keyword>
+                      <local.int.0> newx </local.int.0>
+                      <symbol> = </symbol>
+                      <expression>
+                        <term>
+                          <this.int.0> x </this.int.0>
+                        </term>
+                        <symbol> + </symbol>
+                        <term>
+                          <symbol> ( </symbol>
+                          <expression>
+                            <term>
+                              <local.int.0> newx </local.int.0>
+                            </term>
+                            <symbol> * </symbol>
+                            <term>
+                              <local.int.4> factor </local.int.4>
+                            </term>
+                          </expression>
+                          <symbol> ) </symbol>
+                        </term>
+                      </expression>
+                      <symbol> ; </symbol>
+                    </letStatement>
+                  </statements>
+                  <symbol> } </symbol>
+                </ifStatement>
+              </statements>
+              <symbol> } </symbol>
+            </ifStatement>
+          </statements>
+          <symbol> } </symbol>
+        </ifStatement>
+        <doStatement>
+          <keyword> do </keyword>
+          <subroutineName> setDestination </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+            <expression>
+              <term>
+                <local.int.0> newx </local.int.0>
+              </term>
+            </expression>
+            <symbol> , </symbol>
+            <expression>
+              <term>
+                <local.int.1> newy </local.int.1>
+              </term>
+            </expression>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <symbol> } </symbol>
+</class>

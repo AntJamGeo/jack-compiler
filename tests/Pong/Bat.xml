@@ -1,0 +1,863 @@
+<class>
+  <keyword> class </keyword>
+  <identifier> Bat </identifier>
+  <symbol> { </symbol>
+  <classVarDec>
+    <keyword> field </keyword>
+    <keyword> int </keyword>
+    <this.int.0> x </this.int.0>
+    <symbol> , </symbol>
+    <this.int.1> y </this.int.1>
+    <symbol> ; </symbol>
+  </classVarDec>
+  <classVarDec>
+    <keyword> field </keyword>
+    <keyword> int </keyword>
+    <this.int.2> width </this.int.2>
+    <symbol> , </symbol>
+    <this.int.3> height </this.int.3>
+    <symbol> ; </symbol>
+  </classVarDec>
+  <classVarDec>
+    <keyword> field </keyword>
+    <keyword> int </keyword>
+    <this.int.4> direction </this.int.4>
+    <symbol> ; </symbol>
+  </classVarDec>
+  <subroutineDec>
+    <keyword> constructor </keyword>
+    <identifier> Bat </identifier>
+    <subroutineName> new </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+      <keyword> int </keyword>
+      <argument.int.0> Ax </argument.int.0>
+      <symbol> , </symbol>
+      <keyword> int </keyword>
+      <argument.int.1> Ay </argument.int.1>
+      <symbol> , </symbol>
+      <keyword> int </keyword>
+      <argument.int.2> Awidth </argument.int.2>
+      <symbol> , </symbol>
+      <keyword> int </keyword>
+      <argument.int.3> Aheight </argument.int.3>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.0> x </this.int.0>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <argument.int.0> Ax </argument.int.0>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.1> y </this.int.1>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <argument.int.1> Ay </argument.int.1>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.2> width </this.int.2>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <argument.int.2> Awidth </argument.int.2>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.3> height </this.int.3>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <argument.int.3> Aheight </argument.int.3>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.4> direction </this.int.4>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <integerConstant> 2 </integerConstant>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <doStatement>
+          <keyword> do </keyword>
+          <subroutineName> show </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <expression>
+            <term>
+              <keyword> this </keyword>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> method </keyword>
+    <keyword> void </keyword>
+    <subroutineName> dispose </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <doStatement>
+          <keyword> do </keyword>
+          <className> Memory </className>
+          <symbol> . </symbol>
+          <subroutineName> deAlloc </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+            <expression>
+              <term>
+                <keyword> this </keyword>
+              </term>
+            </expression>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> method </keyword>
+    <keyword> void </keyword>
+    <subroutineName> show </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <doStatement>
+          <keyword> do </keyword>
+          <className> Screen </className>
+          <symbol> . </symbol>
+          <subroutineName> setColor </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+            <expression>
+              <term>
+                <keyword> true </keyword>
+              </term>
+            </expression>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <doStatement>
+          <keyword> do </keyword>
+          <subroutineName> draw </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> method </keyword>
+    <keyword> void </keyword>
+    <subroutineName> hide </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <doStatement>
+          <keyword> do </keyword>
+          <className> Screen </className>
+          <symbol> . </symbol>
+          <subroutineName> setColor </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+            <expression>
+              <term>
+                <keyword> false </keyword>
+              </term>
+            </expression>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <doStatement>
+          <keyword> do </keyword>
+          <subroutineName> draw </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> method </keyword>
+    <keyword> void </keyword>
+    <subroutineName> draw </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <doStatement>
+          <keyword> do </keyword>
+          <className> Screen </className>
+          <symbol> . </symbol>
+          <subroutineName> drawRectangle </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+            <expression>
+              <term>
+                <this.int.0> x </this.int.0>
+              </term>
+            </expression>
+            <symbol> , </symbol>
+            <expression>
+              <term>
+                <this.int.1> y </this.int.1>
+              </term>
+            </expression>
+            <symbol> , </symbol>
+            <expression>
+              <term>
+                <this.int.0> x </this.int.0>
+              </term>
+              <symbol> + </symbol>
+              <term>
+                <this.int.2> width </this.int.2>
+              </term>
+            </expression>
+            <symbol> , </symbol>
+            <expression>
+              <term>
+                <this.int.1> y </this.int.1>
+              </term>
+              <symbol> + </symbol>
+              <term>
+                <this.int.3> height </this.int.3>
+              </term>
+            </expression>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> method </keyword>
+    <keyword> void </keyword>
+    <subroutineName> setDirection </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+      <keyword> int </keyword>
+      <argument.int.1> Adirection </argument.int.1>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.4> direction </this.int.4>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <argument.int.1> Adirection </argument.int.1>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> method </keyword>
+    <keyword> int </keyword>
+    <subroutineName> getLeft </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <returnStatement>
+          <keyword> return </keyword>
+          <expression>
+            <term>
+              <this.int.0> x </this.int.0>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> method </keyword>
+    <keyword> int </keyword>
+    <subroutineName> getRight </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <returnStatement>
+          <keyword> return </keyword>
+          <expression>
+            <term>
+              <this.int.0> x </this.int.0>
+            </term>
+            <symbol> + </symbol>
+            <term>
+              <this.int.2> width </this.int.2>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> method </keyword>
+    <keyword> void </keyword>
+    <subroutineName> setWidth </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+      <keyword> int </keyword>
+      <argument.int.1> Awidth </argument.int.1>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <doStatement>
+          <keyword> do </keyword>
+          <subroutineName> hide </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.2> width </this.int.2>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <argument.int.1> Awidth </argument.int.1>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <doStatement>
+          <keyword> do </keyword>
+          <subroutineName> show </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> method </keyword>
+    <keyword> void </keyword>
+    <subroutineName> move </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <ifStatement>
+          <keyword> if </keyword>
+          <symbol> ( </symbol>
+          <expression>
+            <term>
+              <this.int.4> direction </this.int.4>
+            </term>
+            <symbol> = </symbol>
+            <term>
+              <integerConstant> 1 </integerConstant>
+            </term>
+          </expression>
+          <symbol> ) </symbol>
+          <symbol> { </symbol>
+          <statements>
+            <letStatement>
+              <keyword> let </keyword>
+              <this.int.0> x </this.int.0>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <this.int.0> x </this.int.0>
+                </term>
+                <symbol> - </symbol>
+                <term>
+                  <integerConstant> 4 </integerConstant>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <ifStatement>
+              <keyword> if </keyword>
+              <symbol> ( </symbol>
+              <expression>
+                <term>
+                  <this.int.0> x </this.int.0>
+                </term>
+                <symbol> &lt; </symbol>
+                <term>
+                  <integerConstant> 0 </integerConstant>
+                </term>
+              </expression>
+              <symbol> ) </symbol>
+              <symbol> { </symbol>
+              <statements>
+                <letStatement>
+                  <keyword> let </keyword>
+                  <this.int.0> x </this.int.0>
+                  <symbol> = </symbol>
+                  <expression>
+                    <term>
+                      <integerConstant> 0 </integerConstant>
+                    </term>
+                  </expression>
+                  <symbol> ; </symbol>
+                </letStatement>
+              </statements>
+              <symbol> } </symbol>
+            </ifStatement>
+            <doStatement>
+              <keyword> do </keyword>
+              <className> Screen </className>
+              <symbol> . </symbol>
+              <subroutineName> setColor </subroutineName>
+              <symbol> ( </symbol>
+              <expressionList>
+                <expression>
+                  <term>
+                    <keyword> false </keyword>
+                  </term>
+                </expression>
+              </expressionList>
+              <symbol> ) </symbol>
+              <symbol> ; </symbol>
+            </doStatement>
+            <doStatement>
+              <keyword> do </keyword>
+              <className> Screen </className>
+              <symbol> . </symbol>
+              <subroutineName> drawRectangle </subroutineName>
+              <symbol> ( </symbol>
+              <expressionList>
+                <expression>
+                  <term>
+                    <symbol> ( </symbol>
+                    <expression>
+                      <term>
+                        <this.int.0> x </this.int.0>
+                      </term>
+                      <symbol> + </symbol>
+                      <term>
+                        <this.int.2> width </this.int.2>
+                      </term>
+                    </expression>
+                    <symbol> ) </symbol>
+                  </term>
+                  <symbol> + </symbol>
+                  <term>
+                    <integerConstant> 1 </integerConstant>
+                  </term>
+                </expression>
+                <symbol> , </symbol>
+                <expression>
+                  <term>
+                    <this.int.1> y </this.int.1>
+                  </term>
+                </expression>
+                <symbol> , </symbol>
+                <expression>
+                  <term>
+                    <symbol> ( </symbol>
+                    <expression>
+                      <term>
+                        <this.int.0> x </this.int.0>
+                      </term>
+                      <symbol> + </symbol>
+                      <term>
+                        <this.int.2> width </this.int.2>
+                      </term>
+                    </expression>
+                    <symbol> ) </symbol>
+                  </term>
+                  <symbol> + </symbol>
+                  <term>
+                    <integerConstant> 4 </integerConstant>
+                  </term>
+                </expression>
+                <symbol> , </symbol>
+                <expression>
+                  <term>
+                    <this.int.1> y </this.int.1>
+                  </term>
+                  <symbol> + </symbol>
+                  <term>
+                    <this.int.3> height </this.int.3>
+                  </term>
+                </expression>
+              </expressionList>
+              <symbol> ) </symbol>
+              <symbol> ; </symbol>
+            </doStatement>
+            <doStatement>
+              <keyword> do </keyword>
+              <className> Screen </className>
+              <symbol> . </symbol>
+              <subroutineName> setColor </subroutineName>
+              <symbol> ( </symbol>
+              <expressionList>
+                <expression>
+                  <term>
+                    <keyword> true </keyword>
+                  </term>
+                </expression>
+              </expressionList>
+              <symbol> ) </symbol>
+              <symbol> ; </symbol>
+            </doStatement>
+            <doStatement>
+              <keyword> do </keyword>
+              <className> Screen </className>
+              <symbol> . </symbol>
+              <subroutineName> drawRectangle </subroutineName>
+              <symbol> ( </symbol>
+              <expressionList>
+                <expression>
+                  <term>
+                    <this.int.0> x </this.int.0>
+                  </term>
+                </expression>
+                <symbol> , </symbol>
+                <expression>
+                  <term>
+                    <this.int.1> y </this.int.1>
+                  </term>
+                </expression>
+                <symbol> , </symbol>
+                <expression>
+                  <term>
+                    <this.int.0> x </this.int.0>
+                  </term>
+                  <symbol> + </symbol>
+                  <term>
+                    <integerConstant> 3 </integerConstant>
+                  </term>
+                </expression>
+                <symbol> , </symbol>
+                <expression>
+                  <term>
+                    <this.int.1> y </this.int.1>
+                  </term>
+                  <symbol> + </symbol>
+                  <term>
+                    <this.int.3> height </this.int.3>
+                  </term>
+                </expression>
+              </expressionList>
+              <symbol> ) </symbol>
+              <symbol> ; </symbol>
+            </doStatement>
+          </statements>
+          <symbol> } </symbol>
+          <keyword> else </keyword>
+          <symbol> { </symbol>
+          <statements>
+            <letStatement>
+              <keyword> let </keyword>
+              <this.int.0> x </this.int.0>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <this.int.0> x </this.int.0>
+                </term>
+                <symbol> + </symbol>
+                <term>
+                  <integerConstant> 4 </integerConstant>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <ifStatement>
+              <keyword> if </keyword>
+              <symbol> ( </symbol>
+              <expression>
+                <term>
+                  <symbol> ( </symbol>
+                  <expression>
+                    <term>
+                      <this.int.0> x </this.int.0>
+                    </term>
+                    <symbol> + </symbol>
+                    <term>
+                      <this.int.2> width </this.int.2>
+                    </term>
+                  </expression>
+                  <symbol> ) </symbol>
+                </term>
+                <symbol> &gt; </symbol>
+                <term>
+                  <integerConstant> 511 </integerConstant>
+                </term>
+              </expression>
+              <symbol> ) </symbol>
+              <symbol> { </symbol>
+              <statements>
+                <letStatement>
+                  <keyword> let </keyword>
+                  <this.int.0> x </this.int.0>
+                  <symbol> = </symbol>
+                  <expression>
+                    <term>
+                      <integerConstant> 511 </integerConstant>
+                    </term>
+                    <symbol> - </symbol>
+                    <term>
+                      <this.int.2> width </this.int.2>
+                    </term>
+                  </expression>
+                  <symbol> ; </symbol>
+                </letStatement>
+              </statements>
+              <symbol> } </symbol>
+            </ifStatement>
+            <doStatement>
+              <keyword> do </keyword>
+              <className> Screen </className>
+              <symbol> . </symbol>
+              <subroutineName> setColor </subroutineName>
+              <symbol> ( </symbol>
+              <expressionList>
+                <expression>
+                  <term>
+                    <keyword> false </keyword>
+                  </term>
+                </expression>
+              </expressionList>
+              <symbol> ) </symbol>
+              <symbol> ; </symbol>
+            </doStatement>
+            <doStatement>
+              <keyword> do </keyword>
+              <className> Screen </className>
+              <symbol> . </symbol>
+              <subroutineName> drawRectangle </subroutineName>
+              <symbol> ( </symbol>
+              <expressionList>
+                <expression>
+                  <term>
+                    <this.int.0> x </this.int.0>
+                  </term>
+                  <symbol> - </symbol>
+                  <term>
+                    <integerConstant> 4 </integerConstant>
+                  </term>
+                </expression>
+                <symbol> , </symbol>
+                <expression>
+                  <term>
+                    <this.int.1> y </this.int.1>
+                  </term>
+                </expression>
+                <symbol> , </symbol>
+                <expression>
+                  <term>
+                    <this.int.0> x </this.int.0>
+                  </term>
+                  <symbol> - </symbol>
+                  <term>
+                    <integerConstant> 1 </integerConstant>
+                  </term>
+                </expression>
+                <symbol> , </symbol>
+                <expression>
+                  <term>
+                    <this.int.1> y </this.int.1>
+                  </term>
+                  <symbol> + </symbol>
+                  <term>
+                    <this.int.3> height </this.int.3>
+                  </term>
+                </expression>
+              </expressionList>
+              <symbol> ) </symbol>
+              <symbol> ; </symbol>
+            </doStatement>
+            <doStatement>
+              <keyword> do </keyword>
+              <className> Screen </className>
+              <symbol> . </symbol>
+              <subroutineName> setColor </subroutineName>
+              <symbol> ( </symbol>
+              <expressionList>
+                <expression>
+                  <term>
+                    <keyword> true </keyword>
+                  </term>
+                </expression>
+              </expressionList>
+              <symbol> ) </symbol>
+              <symbol> ; </symbol>
+            </doStatement>
+            <doStatement>
+              <keyword> do </keyword>
+              <className> Screen </className>
+              <symbol> . </symbol>
+              <subroutineName> drawRectangle </subroutineName>
+              <symbol> ( </symbol>
+              <expressionList>
+                <expression>
+                  <term>
+                    <symbol> ( </symbol>
+                    <expression>
+                      <term>
+                        <this.int.0> x </this.int.0>
+                      </term>
+                      <symbol> + </symbol>
+                      <term>
+                        <this.int.2> width </this.int.2>
+                      </term>
+                    </expression>
+                    <symbol> ) </symbol>
+                  </term>
+                  <symbol> - </symbol>
+                  <term>
+                    <integerConstant> 3 </integerConstant>
+                  </term>
+                </expression>
+                <symbol> , </symbol>
+                <expression>
+                  <term>
+                    <this.int.1> y </this.int.1>
+                  </term>
+                </expression>
+                <symbol> , </symbol>
+                <expression>
+                  <term>
+                    <this.int.0> x </this.int.0>
+                  </term>
+                  <symbol> + </symbol>
+                  <term>
+                    <this.int.2> width </this.int.2>
+                  </term>
+                </expression>
+                <symbol> , </symbol>
+                <expression>
+                  <term>
+                    <this.int.1> y </this.int.1>
+                  </term>
+                  <symbol> + </symbol>
+                  <term>
+                    <this.int.3> height </this.int.3>
+                  </term>
+                </expression>
+              </expressionList>
+              <symbol> ) </symbol>
+              <symbol> ; </symbol>
+            </doStatement>
+          </statements>
+          <symbol> } </symbol>
+        </ifStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <symbol> } </symbol>
+</class>

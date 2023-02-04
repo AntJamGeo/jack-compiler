@@ -1,0 +1,4 @@
+class Comment {
+    field int x /*;
+    static char c, d;
+}

@@ -1,0 +1,5 @@
+class Do {
+    method void m1 () {
+        do Something.now;
+    }
+}

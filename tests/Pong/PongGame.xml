@@ -1,0 +1,1280 @@
+<class>
+  <keyword> class </keyword>
+  <identifier> PongGame </identifier>
+  <symbol> { </symbol>
+  <classVarDec>
+    <keyword> static </keyword>
+    <identifier> PongGame </identifier>
+    <static.PongGame.0> instance </static.PongGame.0>
+    <symbol> ; </symbol>
+  </classVarDec>
+  <classVarDec>
+    <keyword> field </keyword>
+    <identifier> Bat </identifier>
+    <this.Bat.0> bat </this.Bat.0>
+    <symbol> ; </symbol>
+  </classVarDec>
+  <classVarDec>
+    <keyword> field </keyword>
+    <identifier> Ball </identifier>
+    <this.Ball.1> ball </this.Ball.1>
+    <symbol> ; </symbol>
+  </classVarDec>
+  <classVarDec>
+    <keyword> field </keyword>
+    <keyword> int </keyword>
+    <this.int.2> wall </this.int.2>
+    <symbol> ; </symbol>
+  </classVarDec>
+  <classVarDec>
+    <keyword> field </keyword>
+    <keyword> boolean </keyword>
+    <this.boolean.3> exit </this.boolean.3>
+    <symbol> ; </symbol>
+  </classVarDec>
+  <classVarDec>
+    <keyword> field </keyword>
+    <keyword> int </keyword>
+    <this.int.4> score </this.int.4>
+    <symbol> ; </symbol>
+  </classVarDec>
+  <classVarDec>
+    <keyword> field </keyword>
+    <keyword> int </keyword>
+    <this.int.5> lastWall </this.int.5>
+    <symbol> ; </symbol>
+  </classVarDec>
+  <classVarDec>
+    <keyword> field </keyword>
+    <keyword> int </keyword>
+    <this.int.6> batWidth </this.int.6>
+    <symbol> ; </symbol>
+  </classVarDec>
+  <subroutineDec>
+    <keyword> constructor </keyword>
+    <identifier> PongGame </identifier>
+    <subroutineName> new </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <doStatement>
+          <keyword> do </keyword>
+          <className> Screen </className>
+          <symbol> . </symbol>
+          <subroutineName> clearScreen </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.6> batWidth </this.int.6>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <integerConstant> 50 </integerConstant>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.Bat.0> bat </this.Bat.0>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <className> Bat </className>
+              <symbol> . </symbol>
+              <subroutineName> new </subroutineName>
+              <symbol> ( </symbol>
+              <expressionList>
+                <expression>
+                  <term>
+                    <integerConstant> 230 </integerConstant>
+                  </term>
+                </expression>
+                <symbol> , </symbol>
+                <expression>
+                  <term>
+                    <integerConstant> 229 </integerConstant>
+                  </term>
+                </expression>
+                <symbol> , </symbol>
+                <expression>
+                  <term>
+                    <this.int.6> batWidth </this.int.6>
+                  </term>
+                </expression>
+                <symbol> , </symbol>
+                <expression>
+                  <term>
+                    <integerConstant> 7 </integerConstant>
+                  </term>
+                </expression>
+              </expressionList>
+              <symbol> ) </symbol>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.Ball.1> ball </this.Ball.1>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <className> Ball </className>
+              <symbol> . </symbol>
+              <subroutineName> new </subroutineName>
+              <symbol> ( </symbol>
+              <expressionList>
+                <expression>
+                  <term>
+                    <integerConstant> 253 </integerConstant>
+                  </term>
+                </expression>
+                <symbol> , </symbol>
+                <expression>
+                  <term>
+                    <integerConstant> 222 </integerConstant>
+                  </term>
+                </expression>
+                <symbol> , </symbol>
+                <expression>
+                  <term>
+                    <integerConstant> 0 </integerConstant>
+                  </term>
+                </expression>
+                <symbol> , </symbol>
+                <expression>
+                  <term>
+                    <integerConstant> 511 </integerConstant>
+                  </term>
+                </expression>
+                <symbol> , </symbol>
+                <expression>
+                  <term>
+                    <integerConstant> 0 </integerConstant>
+                  </term>
+                </expression>
+                <symbol> , </symbol>
+                <expression>
+                  <term>
+                    <integerConstant> 229 </integerConstant>
+                  </term>
+                </expression>
+              </expressionList>
+              <symbol> ) </symbol>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <doStatement>
+          <keyword> do </keyword>
+          <this.Ball.1> ball </this.Ball.1>
+          <symbol> . </symbol>
+          <subroutineName> setDestination </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+            <expression>
+              <term>
+                <integerConstant> 400 </integerConstant>
+              </term>
+            </expression>
+            <symbol> , </symbol>
+            <expression>
+              <term>
+                <integerConstant> 0 </integerConstant>
+              </term>
+            </expression>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <doStatement>
+          <keyword> do </keyword>
+          <className> Screen </className>
+          <symbol> . </symbol>
+          <subroutineName> drawRectangle </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+            <expression>
+              <term>
+                <integerConstant> 0 </integerConstant>
+              </term>
+            </expression>
+            <symbol> , </symbol>
+            <expression>
+              <term>
+                <integerConstant> 238 </integerConstant>
+              </term>
+            </expression>
+            <symbol> , </symbol>
+            <expression>
+              <term>
+                <integerConstant> 511 </integerConstant>
+              </term>
+            </expression>
+            <symbol> , </symbol>
+            <expression>
+              <term>
+                <integerConstant> 240 </integerConstant>
+              </term>
+            </expression>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <doStatement>
+          <keyword> do </keyword>
+          <className> Output </className>
+          <symbol> . </symbol>
+          <subroutineName> moveCursor </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+            <expression>
+              <term>
+                <integerConstant> 22 </integerConstant>
+              </term>
+            </expression>
+            <symbol> , </symbol>
+            <expression>
+              <term>
+                <integerConstant> 0 </integerConstant>
+              </term>
+            </expression>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <doStatement>
+          <keyword> do </keyword>
+          <className> Output </className>
+          <symbol> . </symbol>
+          <subroutineName> printString </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+            <expression>
+              <term>
+                <stringConstant> Score: 0 </stringConstant>
+              </term>
+            </expression>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.boolean.3> exit </this.boolean.3>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <keyword> false </keyword>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.4> score </this.int.4>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <integerConstant> 0 </integerConstant>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.2> wall </this.int.2>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <integerConstant> 0 </integerConstant>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.5> lastWall </this.int.5>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <integerConstant> 0 </integerConstant>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <expression>
+            <term>
+              <keyword> this </keyword>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> method </keyword>
+    <keyword> void </keyword>
+    <subroutineName> dispose </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <doStatement>
+          <keyword> do </keyword>
+          <this.Bat.0> bat </this.Bat.0>
+          <symbol> . </symbol>
+          <subroutineName> dispose </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <doStatement>
+          <keyword> do </keyword>
+          <this.Ball.1> ball </this.Ball.1>
+          <symbol> . </symbol>
+          <subroutineName> dispose </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <doStatement>
+          <keyword> do </keyword>
+          <className> Memory </className>
+          <symbol> . </symbol>
+          <subroutineName> deAlloc </subroutineName>
+          <symbol> ( </symbol>
+          <expressionList>
+            <expression>
+              <term>
+                <keyword> this </keyword>
+              </term>
+            </expression>
+          </expressionList>
+          <symbol> ) </symbol>
+          <symbol> ; </symbol>
+        </doStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> function </keyword>
+    <keyword> void </keyword>
+    <subroutineName> newInstance </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <letStatement>
+          <keyword> let </keyword>
+          <static.PongGame.0> instance </static.PongGame.0>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <className> PongGame </className>
+              <symbol> . </symbol>
+              <subroutineName> new </subroutineName>
+              <symbol> ( </symbol>
+              <expressionList>
+              </expressionList>
+              <symbol> ) </symbol>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> function </keyword>
+    <identifier> PongGame </identifier>
+    <subroutineName> getInstance </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <statements>
+        <returnStatement>
+          <keyword> return </keyword>
+          <expression>
+            <term>
+              <static.PongGame.0> instance </static.PongGame.0>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> method </keyword>
+    <keyword> void </keyword>
+    <subroutineName> run </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <varDec>
+        <keyword> var </keyword>
+        <keyword> char </keyword>
+        <local.char.0> key </local.char.0>
+        <symbol> ; </symbol>
+      </varDec>
+      <statements>
+        <whileStatement>
+          <keyword> while </keyword>
+          <symbol> ( </symbol>
+          <expression>
+            <term>
+              <symbol> ~ </symbol>
+              <term>
+                <this.boolean.3> exit </this.boolean.3>
+              </term>
+            </term>
+          </expression>
+          <symbol> ) </symbol>
+          <symbol> { </symbol>
+          <statements>
+            <whileStatement>
+              <keyword> while </keyword>
+              <symbol> ( </symbol>
+              <expression>
+                <term>
+                  <symbol> ( </symbol>
+                  <expression>
+                    <term>
+                      <local.char.0> key </local.char.0>
+                    </term>
+                    <symbol> = </symbol>
+                    <term>
+                      <integerConstant> 0 </integerConstant>
+                    </term>
+                  </expression>
+                  <symbol> ) </symbol>
+                </term>
+                <symbol> &amp; </symbol>
+                <term>
+                  <symbol> ( </symbol>
+                  <expression>
+                    <term>
+                      <symbol> ~ </symbol>
+                      <term>
+                        <this.boolean.3> exit </this.boolean.3>
+                      </term>
+                    </term>
+                  </expression>
+                  <symbol> ) </symbol>
+                </term>
+              </expression>
+              <symbol> ) </symbol>
+              <symbol> { </symbol>
+              <statements>
+                <letStatement>
+                  <keyword> let </keyword>
+                  <local.char.0> key </local.char.0>
+                  <symbol> = </symbol>
+                  <expression>
+                    <term>
+                      <className> Keyboard </className>
+                      <symbol> . </symbol>
+                      <subroutineName> keyPressed </subroutineName>
+                      <symbol> ( </symbol>
+                      <expressionList>
+                      </expressionList>
+                      <symbol> ) </symbol>
+                    </term>
+                  </expression>
+                  <symbol> ; </symbol>
+                </letStatement>
+                <doStatement>
+                  <keyword> do </keyword>
+                  <this.Bat.0> bat </this.Bat.0>
+                  <symbol> . </symbol>
+                  <subroutineName> move </subroutineName>
+                  <symbol> ( </symbol>
+                  <expressionList>
+                  </expressionList>
+                  <symbol> ) </symbol>
+                  <symbol> ; </symbol>
+                </doStatement>
+                <doStatement>
+                  <keyword> do </keyword>
+                  <subroutineName> moveBall </subroutineName>
+                  <symbol> ( </symbol>
+                  <expressionList>
+                  </expressionList>
+                  <symbol> ) </symbol>
+                  <symbol> ; </symbol>
+                </doStatement>
+                <doStatement>
+                  <keyword> do </keyword>
+                  <className> Sys </className>
+                  <symbol> . </symbol>
+                  <subroutineName> wait </subroutineName>
+                  <symbol> ( </symbol>
+                  <expressionList>
+                    <expression>
+                      <term>
+                        <integerConstant> 50 </integerConstant>
+                      </term>
+                    </expression>
+                  </expressionList>
+                  <symbol> ) </symbol>
+                  <symbol> ; </symbol>
+                </doStatement>
+              </statements>
+              <symbol> } </symbol>
+            </whileStatement>
+            <ifStatement>
+              <keyword> if </keyword>
+              <symbol> ( </symbol>
+              <expression>
+                <term>
+                  <local.char.0> key </local.char.0>
+                </term>
+                <symbol> = </symbol>
+                <term>
+                  <integerConstant> 130 </integerConstant>
+                </term>
+              </expression>
+              <symbol> ) </symbol>
+              <symbol> { </symbol>
+              <statements>
+                <doStatement>
+                  <keyword> do </keyword>
+                  <this.Bat.0> bat </this.Bat.0>
+                  <symbol> . </symbol>
+                  <subroutineName> setDirection </subroutineName>
+                  <symbol> ( </symbol>
+                  <expressionList>
+                    <expression>
+                      <term>
+                        <integerConstant> 1 </integerConstant>
+                      </term>
+                    </expression>
+                  </expressionList>
+                  <symbol> ) </symbol>
+                  <symbol> ; </symbol>
+                </doStatement>
+              </statements>
+              <symbol> } </symbol>
+              <keyword> else </keyword>
+              <symbol> { </symbol>
+              <statements>
+                <ifStatement>
+                  <keyword> if </keyword>
+                  <symbol> ( </symbol>
+                  <expression>
+                    <term>
+                      <local.char.0> key </local.char.0>
+                    </term>
+                    <symbol> = </symbol>
+                    <term>
+                      <integerConstant> 132 </integerConstant>
+                    </term>
+                  </expression>
+                  <symbol> ) </symbol>
+                  <symbol> { </symbol>
+                  <statements>
+                    <doStatement>
+                      <keyword> do </keyword>
+                      <this.Bat.0> bat </this.Bat.0>
+                      <symbol> . </symbol>
+                      <subroutineName> setDirection </subroutineName>
+                      <symbol> ( </symbol>
+                      <expressionList>
+                        <expression>
+                          <term>
+                            <integerConstant> 2 </integerConstant>
+                          </term>
+                        </expression>
+                      </expressionList>
+                      <symbol> ) </symbol>
+                      <symbol> ; </symbol>
+                    </doStatement>
+                  </statements>
+                  <symbol> } </symbol>
+                  <keyword> else </keyword>
+                  <symbol> { </symbol>
+                  <statements>
+                    <ifStatement>
+                      <keyword> if </keyword>
+                      <symbol> ( </symbol>
+                      <expression>
+                        <term>
+                          <local.char.0> key </local.char.0>
+                        </term>
+                        <symbol> = </symbol>
+                        <term>
+                          <integerConstant> 140 </integerConstant>
+                        </term>
+                      </expression>
+                      <symbol> ) </symbol>
+                      <symbol> { </symbol>
+                      <statements>
+                        <letStatement>
+                          <keyword> let </keyword>
+                          <this.boolean.3> exit </this.boolean.3>
+                          <symbol> = </symbol>
+                          <expression>
+                            <term>
+                              <keyword> true </keyword>
+                            </term>
+                          </expression>
+                          <symbol> ; </symbol>
+                        </letStatement>
+                      </statements>
+                      <symbol> } </symbol>
+                    </ifStatement>
+                  </statements>
+                  <symbol> } </symbol>
+                </ifStatement>
+              </statements>
+              <symbol> } </symbol>
+            </ifStatement>
+            <whileStatement>
+              <keyword> while </keyword>
+              <symbol> ( </symbol>
+              <expression>
+                <term>
+                  <symbol> ( </symbol>
+                  <expression>
+                    <term>
+                      <symbol> ~ </symbol>
+                      <term>
+                        <symbol> ( </symbol>
+                        <expression>
+                          <term>
+                            <local.char.0> key </local.char.0>
+                          </term>
+                          <symbol> = </symbol>
+                          <term>
+                            <integerConstant> 0 </integerConstant>
+                          </term>
+                        </expression>
+                        <symbol> ) </symbol>
+                      </term>
+                    </term>
+                  </expression>
+                  <symbol> ) </symbol>
+                </term>
+                <symbol> &amp; </symbol>
+                <term>
+                  <symbol> ( </symbol>
+                  <expression>
+                    <term>
+                      <symbol> ~ </symbol>
+                      <term>
+                        <this.boolean.3> exit </this.boolean.3>
+                      </term>
+                    </term>
+                  </expression>
+                  <symbol> ) </symbol>
+                </term>
+              </expression>
+              <symbol> ) </symbol>
+              <symbol> { </symbol>
+              <statements>
+                <letStatement>
+                  <keyword> let </keyword>
+                  <local.char.0> key </local.char.0>
+                  <symbol> = </symbol>
+                  <expression>
+                    <term>
+                      <className> Keyboard </className>
+                      <symbol> . </symbol>
+                      <subroutineName> keyPressed </subroutineName>
+                      <symbol> ( </symbol>
+                      <expressionList>
+                      </expressionList>
+                      <symbol> ) </symbol>
+                    </term>
+                  </expression>
+                  <symbol> ; </symbol>
+                </letStatement>
+                <doStatement>
+                  <keyword> do </keyword>
+                  <this.Bat.0> bat </this.Bat.0>
+                  <symbol> . </symbol>
+                  <subroutineName> move </subroutineName>
+                  <symbol> ( </symbol>
+                  <expressionList>
+                  </expressionList>
+                  <symbol> ) </symbol>
+                  <symbol> ; </symbol>
+                </doStatement>
+                <doStatement>
+                  <keyword> do </keyword>
+                  <subroutineName> moveBall </subroutineName>
+                  <symbol> ( </symbol>
+                  <expressionList>
+                  </expressionList>
+                  <symbol> ) </symbol>
+                  <symbol> ; </symbol>
+                </doStatement>
+                <doStatement>
+                  <keyword> do </keyword>
+                  <className> Sys </className>
+                  <symbol> . </symbol>
+                  <subroutineName> wait </subroutineName>
+                  <symbol> ( </symbol>
+                  <expressionList>
+                    <expression>
+                      <term>
+                        <integerConstant> 50 </integerConstant>
+                      </term>
+                    </expression>
+                  </expressionList>
+                  <symbol> ) </symbol>
+                  <symbol> ; </symbol>
+                </doStatement>
+              </statements>
+              <symbol> } </symbol>
+            </whileStatement>
+          </statements>
+          <symbol> } </symbol>
+        </whileStatement>
+        <ifStatement>
+          <keyword> if </keyword>
+          <symbol> ( </symbol>
+          <expression>
+            <term>
+              <this.boolean.3> exit </this.boolean.3>
+            </term>
+          </expression>
+          <symbol> ) </symbol>
+          <symbol> { </symbol>
+          <statements>
+            <doStatement>
+              <keyword> do </keyword>
+              <className> Output </className>
+              <symbol> . </symbol>
+              <subroutineName> moveCursor </subroutineName>
+              <symbol> ( </symbol>
+              <expressionList>
+                <expression>
+                  <term>
+                    <integerConstant> 10 </integerConstant>
+                  </term>
+                </expression>
+                <symbol> , </symbol>
+                <expression>
+                  <term>
+                    <integerConstant> 27 </integerConstant>
+                  </term>
+                </expression>
+              </expressionList>
+              <symbol> ) </symbol>
+              <symbol> ; </symbol>
+            </doStatement>
+            <doStatement>
+              <keyword> do </keyword>
+              <className> Output </className>
+              <symbol> . </symbol>
+              <subroutineName> printString </subroutineName>
+              <symbol> ( </symbol>
+              <expressionList>
+                <expression>
+                  <term>
+                    <stringConstant> Game Over </stringConstant>
+                  </term>
+                </expression>
+              </expressionList>
+              <symbol> ) </symbol>
+              <symbol> ; </symbol>
+            </doStatement>
+          </statements>
+          <symbol> } </symbol>
+        </ifStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> method </keyword>
+    <keyword> void </keyword>
+    <subroutineName> moveBall </subroutineName>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <varDec>
+        <keyword> var </keyword>
+        <keyword> int </keyword>
+        <local.int.0> bouncingDirection </local.int.0>
+        <symbol> , </symbol>
+        <local.int.1> batLeft </local.int.1>
+        <symbol> , </symbol>
+        <local.int.2> batRight </local.int.2>
+        <symbol> , </symbol>
+        <local.int.3> ballLeft </local.int.3>
+        <symbol> , </symbol>
+        <local.int.4> ballRight </local.int.4>
+        <symbol> ; </symbol>
+      </varDec>
+      <statements>
+        <letStatement>
+          <keyword> let </keyword>
+          <this.int.2> wall </this.int.2>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <this.Ball.1> ball </this.Ball.1>
+              <symbol> . </symbol>
+              <subroutineName> move </subroutineName>
+              <symbol> ( </symbol>
+              <expressionList>
+              </expressionList>
+              <symbol> ) </symbol>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <ifStatement>
+          <keyword> if </keyword>
+          <symbol> ( </symbol>
+          <expression>
+            <term>
+              <symbol> ( </symbol>
+              <expression>
+                <term>
+                  <this.int.2> wall </this.int.2>
+                </term>
+                <symbol> &gt; </symbol>
+                <term>
+                  <integerConstant> 0 </integerConstant>
+                </term>
+              </expression>
+              <symbol> ) </symbol>
+            </term>
+            <symbol> &amp; </symbol>
+            <term>
+              <symbol> ( </symbol>
+              <expression>
+                <term>
+                  <symbol> ~ </symbol>
+                  <term>
+                    <symbol> ( </symbol>
+                    <expression>
+                      <term>
+                        <this.int.2> wall </this.int.2>
+                      </term>
+                      <symbol> = </symbol>
+                      <term>
+                        <this.int.5> lastWall </this.int.5>
+                      </term>
+                    </expression>
+                    <symbol> ) </symbol>
+                  </term>
+                </term>
+              </expression>
+              <symbol> ) </symbol>
+            </term>
+          </expression>
+          <symbol> ) </symbol>
+          <symbol> { </symbol>
+          <statements>
+            <letStatement>
+              <keyword> let </keyword>
+              <this.int.5> lastWall </this.int.5>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <this.int.2> wall </this.int.2>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <letStatement>
+              <keyword> let </keyword>
+              <local.int.0> bouncingDirection </local.int.0>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <integerConstant> 0 </integerConstant>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <letStatement>
+              <keyword> let </keyword>
+              <local.int.1> batLeft </local.int.1>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <this.Bat.0> bat </this.Bat.0>
+                  <symbol> . </symbol>
+                  <subroutineName> getLeft </subroutineName>
+                  <symbol> ( </symbol>
+                  <expressionList>
+                  </expressionList>
+                  <symbol> ) </symbol>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <letStatement>
+              <keyword> let </keyword>
+              <local.int.2> batRight </local.int.2>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <this.Bat.0> bat </this.Bat.0>
+                  <symbol> . </symbol>
+                  <subroutineName> getRight </subroutineName>
+                  <symbol> ( </symbol>
+                  <expressionList>
+                  </expressionList>
+                  <symbol> ) </symbol>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <letStatement>
+              <keyword> let </keyword>
+              <local.int.3> ballLeft </local.int.3>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <this.Ball.1> ball </this.Ball.1>
+                  <symbol> . </symbol>
+                  <subroutineName> getLeft </subroutineName>
+                  <symbol> ( </symbol>
+                  <expressionList>
+                  </expressionList>
+                  <symbol> ) </symbol>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <letStatement>
+              <keyword> let </keyword>
+              <local.int.4> ballRight </local.int.4>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <this.Ball.1> ball </this.Ball.1>
+                  <symbol> . </symbol>
+                  <subroutineName> getRight </subroutineName>
+                  <symbol> ( </symbol>
+                  <expressionList>
+                  </expressionList>
+                  <symbol> ) </symbol>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <ifStatement>
+              <keyword> if </keyword>
+              <symbol> ( </symbol>
+              <expression>
+                <term>
+                  <this.int.2> wall </this.int.2>
+                </term>
+                <symbol> = </symbol>
+                <term>
+                  <integerConstant> 4 </integerConstant>
+                </term>
+              </expression>
+              <symbol> ) </symbol>
+              <symbol> { </symbol>
+              <statements>
+                <letStatement>
+                  <keyword> let </keyword>
+                  <this.boolean.3> exit </this.boolean.3>
+                  <symbol> = </symbol>
+                  <expression>
+                    <term>
+                      <symbol> ( </symbol>
+                      <expression>
+                        <term>
+                          <local.int.1> batLeft </local.int.1>
+                        </term>
+                        <symbol> &gt; </symbol>
+                        <term>
+                          <local.int.4> ballRight </local.int.4>
+                        </term>
+                      </expression>
+                      <symbol> ) </symbol>
+                    </term>
+                    <symbol> | </symbol>
+                    <term>
+                      <symbol> ( </symbol>
+                      <expression>
+                        <term>
+                          <local.int.2> batRight </local.int.2>
+                        </term>
+                        <symbol> &lt; </symbol>
+                        <term>
+                          <local.int.3> ballLeft </local.int.3>
+                        </term>
+                      </expression>
+                      <symbol> ) </symbol>
+                    </term>
+                  </expression>
+                  <symbol> ; </symbol>
+                </letStatement>
+                <ifStatement>
+                  <keyword> if </keyword>
+                  <symbol> ( </symbol>
+                  <expression>
+                    <term>
+                      <symbol> ~ </symbol>
+                      <term>
+                        <this.boolean.3> exit </this.boolean.3>
+                      </term>
+                    </term>
+                  </expression>
+                  <symbol> ) </symbol>
+                  <symbol> { </symbol>
+                  <statements>
+                    <ifStatement>
+                      <keyword> if </keyword>
+                      <symbol> ( </symbol>
+                      <expression>
+                        <term>
+                          <local.int.4> ballRight </local.int.4>
+                        </term>
+                        <symbol> &lt; </symbol>
+                        <term>
+                          <symbol> ( </symbol>
+                          <expression>
+                            <term>
+                              <local.int.1> batLeft </local.int.1>
+                            </term>
+                            <symbol> + </symbol>
+                            <term>
+                              <integerConstant> 10 </integerConstant>
+                            </term>
+                          </expression>
+                          <symbol> ) </symbol>
+                        </term>
+                      </expression>
+                      <symbol> ) </symbol>
+                      <symbol> { </symbol>
+                      <statements>
+                        <letStatement>
+                          <keyword> let </keyword>
+                          <local.int.0> bouncingDirection </local.int.0>
+                          <symbol> = </symbol>
+                          <expression>
+                            <term>
+                              <symbol> - </symbol>
+                              <term>
+                                <integerConstant> 1 </integerConstant>
+                              </term>
+                            </term>
+                          </expression>
+                          <symbol> ; </symbol>
+                        </letStatement>
+                      </statements>
+                      <symbol> } </symbol>
+                      <keyword> else </keyword>
+                      <symbol> { </symbol>
+                      <statements>
+                        <ifStatement>
+                          <keyword> if </keyword>
+                          <symbol> ( </symbol>
+                          <expression>
+                            <term>
+                              <local.int.3> ballLeft </local.int.3>
+                            </term>
+                            <symbol> &gt; </symbol>
+                            <term>
+                              <symbol> ( </symbol>
+                              <expression>
+                                <term>
+                                  <local.int.2> batRight </local.int.2>
+                                </term>
+                                <symbol> - </symbol>
+                                <term>
+                                  <integerConstant> 10 </integerConstant>
+                                </term>
+                              </expression>
+                              <symbol> ) </symbol>
+                            </term>
+                          </expression>
+                          <symbol> ) </symbol>
+                          <symbol> { </symbol>
+                          <statements>
+                            <letStatement>
+                              <keyword> let </keyword>
+                              <local.int.0> bouncingDirection </local.int.0>
+                              <symbol> = </symbol>
+                              <expression>
+                                <term>
+                                  <integerConstant> 1 </integerConstant>
+                                </term>
+                              </expression>
+                              <symbol> ; </symbol>
+                            </letStatement>
+                          </statements>
+                          <symbol> } </symbol>
+                        </ifStatement>
+                      </statements>
+                      <symbol> } </symbol>
+                    </ifStatement>
+                    <letStatement>
+                      <keyword> let </keyword>
+                      <this.int.6> batWidth </this.int.6>
+                      <symbol> = </symbol>
+                      <expression>
+                        <term>
+                          <this.int.6> batWidth </this.int.6>
+                        </term>
+                        <symbol> - </symbol>
+                        <term>
+                          <integerConstant> 2 </integerConstant>
+                        </term>
+                      </expression>
+                      <symbol> ; </symbol>
+                    </letStatement>
+                    <doStatement>
+                      <keyword> do </keyword>
+                      <this.Bat.0> bat </this.Bat.0>
+                      <symbol> . </symbol>
+                      <subroutineName> setWidth </subroutineName>
+                      <symbol> ( </symbol>
+                      <expressionList>
+                        <expression>
+                          <term>
+                            <this.int.6> batWidth </this.int.6>
+                          </term>
+                        </expression>
+                      </expressionList>
+                      <symbol> ) </symbol>
+                      <symbol> ; </symbol>
+                    </doStatement>
+                    <letStatement>
+                      <keyword> let </keyword>
+                      <this.int.4> score </this.int.4>
+                      <symbol> = </symbol>
+                      <expression>
+                        <term>
+                          <this.int.4> score </this.int.4>
+                        </term>
+                        <symbol> + </symbol>
+                        <term>
+                          <integerConstant> 1 </integerConstant>
+                        </term>
+                      </expression>
+                      <symbol> ; </symbol>
+                    </letStatement>
+                    <doStatement>
+                      <keyword> do </keyword>
+                      <className> Output </className>
+                      <symbol> . </symbol>
+                      <subroutineName> moveCursor </subroutineName>
+                      <symbol> ( </symbol>
+                      <expressionList>
+                        <expression>
+                          <term>
+                            <integerConstant> 22 </integerConstant>
+                          </term>
+                        </expression>
+                        <symbol> , </symbol>
+                        <expression>
+                          <term>
+                            <integerConstant> 7 </integerConstant>
+                          </term>
+                        </expression>
+                      </expressionList>
+                      <symbol> ) </symbol>
+                      <symbol> ; </symbol>
+                    </doStatement>
+                    <doStatement>
+                      <keyword> do </keyword>
+                      <className> Output </className>
+                      <symbol> . </symbol>
+                      <subroutineName> printInt </subroutineName>
+                      <symbol> ( </symbol>
+                      <expressionList>
+                        <expression>
+                          <term>
+                            <this.int.4> score </this.int.4>
+                          </term>
+                        </expression>
+                      </expressionList>
+                      <symbol> ) </symbol>
+                      <symbol> ; </symbol>
+                    </doStatement>
+                  </statements>
+                  <symbol> } </symbol>
+                </ifStatement>
+              </statements>
+              <symbol> } </symbol>
+            </ifStatement>
+            <doStatement>
+              <keyword> do </keyword>
+              <this.Ball.1> ball </this.Ball.1>
+              <symbol> . </symbol>
+              <subroutineName> bounce </subroutineName>
+              <symbol> ( </symbol>
+              <expressionList>
+                <expression>
+                  <term>
+                    <local.int.0> bouncingDirection </local.int.0>
+                  </term>
+                </expression>
+              </expressionList>
+              <symbol> ) </symbol>
+              <symbol> ; </symbol>
+            </doStatement>
+          </statements>
+          <symbol> } </symbol>
+        </ifStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <symbol> } </symbol>
+</class>

@@ -1,0 +1,8 @@
+class Var {
+    field int x, y;
+    method void m1 (int z) {
+        var int w;
+        let w = x + y * z - undeclared_var;
+        return w*x;
+    }
+}

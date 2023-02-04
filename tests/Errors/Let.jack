@@ -1,0 +1,9 @@
+class Let {
+    field int x;
+    function void f1(int y) {
+        var int z;
+        let z = 3;
+        let w = 7;
+        let x = z+w*y;
+    }
+}

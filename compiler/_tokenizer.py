@@ -91,7 +91,7 @@ class JackTokenizer:
                     self._char_no += 1
                     end_of_string = self._line.find("\"", self._char_no)
                     if end_of_string == -1:
-                        self._raise_error("EndOfFile", "unclosed string")
+                        self._raise_error("Syntax", "unclosed string")
                     self._token = self._line[self._char_no:end_of_string]
                     self._token_type = "stringConstant"
                     self._char_no = end_of_string + 1

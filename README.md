@@ -13,6 +13,10 @@ To use, clone this repository and run `python3 <path to compiler directory> <pat
 
 Optionally add the `-x` flag (e.g. `python3 compiler -x example`) to output .xml files instead of .vm files. These are used to clearly see each token in XML format in a .jack file.
 
+## Related Projects
+* Hack Assembler: https://github.com/AntJamGeo/hack-assembler
+* Hack Virtual Machine Translator: https://github.com/AntJamGeo/hack-vm-translator
+
 ## References
 * nand2tetris Website: https://www.nand2tetris.org/
 * Part 1 of the Course (Hardware): https://www.coursera.org/learn/build-a-computer
